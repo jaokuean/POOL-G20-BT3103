@@ -10,7 +10,7 @@
             <li v-for="feed in feeds" :key="feed.index">
                 <span id='li-container'>
                     <div style="width:20%;">
-                        <img v-bind:src='feed.imgURL'/>
+                        <img v-bind:src='feed.imgURL'>
                     </div>
                     <div style="width:80%;">
                         {{feed.description}}
