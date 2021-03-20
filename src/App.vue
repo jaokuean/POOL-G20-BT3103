@@ -1,12 +1,12 @@
 <template>
-    <sidebar></sidebar>
+    <user></user>
 </template>
 
 <script>
-import sidebar from './components/AccountSidebar.vue'
+import user from './components/UserProfile.vue'
 export default {
     components: {
-        sidebar
+        user
     }
 }
 </script>
