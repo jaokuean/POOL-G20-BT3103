@@ -1,12 +1,12 @@
 <template>
-    <user></user>
+    <search></search>
 </template>
 
 <script>
-import user from './components/UserProfile.vue'
+import search from './components/SearchPage.vue'
 export default {
     components: {
-        user
+        search
     }
 }
 </script>
