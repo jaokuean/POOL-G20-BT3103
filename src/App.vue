@@ -1,6 +1,6 @@
 <template>
-    <poolSidebar>
-    </poolSidebar>
+    <div>
+    </div>
 </template>
 
 <script>
