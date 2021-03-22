@@ -3,7 +3,7 @@
         <div class = "sidebar-container">
             <div id = "sidebar-header">
                 <img v-bind:src = "this.imageUrl" id = "servicePic" >
-                <p> {{this.serviceName}} </p>
+                <h1> {{this.serviceName}} </h1>
                 <p> Monthly Cost</p>
                  <p id = "costbox" >${{this.cost}}</p>
             </div>
@@ -105,8 +105,8 @@ li > img {
     position: relative;
     overflow: hidden;
     margin: 0;
-    width: 100%;
-    height: 70%;
+    width: 70%;
+    height: 50%;
     align: center;
 }
 
@@ -114,7 +114,7 @@ ul{
     display: flex;
     flex-wrap: wrap;
     list-style-type: none;
-    width: calc(100% * (1/1.3));
+    width: calc(100% * (1/1.5));
     justify-content: center;
 }
 li{
