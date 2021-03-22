@@ -3,10 +3,12 @@
         <div class = "sidebar-container">
             <div id = "sidebar-header">
                 <img v-bind:src = "this.imageUrl" id = "servicePic" >
-                <p> {{this.serviceName}} </p>
-                <p> Monthly Cost: ${{this.cost}} </p>
+                <h1> {{this.serviceName}} </h1>
+                <p> Monthly Cost</p>
+                 <p id = "costbox" >${{this.cost}}</p>
             </div>
             <div class = "members">
+                <p> Members </p>
                 <ul>
                     <li v-for="member in members" v-bind:key="member.name">
                         <img v-bind:src = "member.profilePhoto">
@@ -103,8 +105,8 @@ li > img {
     position: relative;
     overflow: hidden;
     margin: 0;
-    width: 100%;
-    height: 70%;
+    width: 70%;
+    height: 50%;
     align: center;
 }
 
@@ -112,10 +114,8 @@ ul{
     display: flex;
     flex-wrap: wrap;
     list-style-type: none;
-    width: calc(100% * (1/1.3));
+    width: calc(100% * (1/1.5));
     justify-content: center;
-    border: 1px solid #222;
-    margin-left: 5px;
 }
 li{
     flex-basis: 65px;
@@ -135,6 +135,14 @@ li{
     border-radius: 20%;
     text-align: center;
     justify-content: center;
+}
+
+#costbox {
+    padding: 10px; 
+    background-color: #c4c3d0;
+    margin-left: 40%;
+    margin-right: 40%;
+    border-radius: 30%;
 }
 
 
