@@ -48,6 +48,7 @@
 
 <script>
 import firebase from "firebase";
+import database from "../firebase.js";
 export default {
   name: "login",
   data() {
@@ -63,12 +64,83 @@ export default {
         .auth()
         .signInWithPopup(provider)
         .then((result) => {
-          console.log(result);
-          this.$router.replace("home");
+          console.log(result.user);
+
+          database
+            .firestore()
+            .collection("users")
+            .doc(result.user.uid)
+            .get()
+            .then(async (doc) => {
+              console.log("Exists: " + doc.exists);
+              if (doc.exists) {
+                console.log("user exists");
+                this.$router.push({ name: "Home" });
+              } else {
+                console.log("user do not exist");
+                this.createAccount(
+                  result.user.displayName,
+                  result.user.email,
+                  result.user.photoURL,
+                  result.user.uid
+                );
+                this.$router.push({ name: "SetPassword" });
+              }
+            })
+            .catch((error) => {
+              console.log("Error getting document:", error);
+            });
         })
         .catch((err) => {
           alert("error " + err.message);
         });
+    },
+    createAccount: function (name, email, photoUrl, uid) {
+      console.log("Enter create ACCOUNT ");
+      console.log("name: " + name);
+      console.log("email: " + email);
+      console.log("photoUrl: " + photoUrl);
+      console.log("uid: " + uid);
+      database
+        .firestore()
+        .collection("users")
+        .doc(uid)
+        .set({
+          defaulyPaymentMethod: "",
+          email: email,
+          name: name,
+          phone: "",
+          pools: [],
+          profilePhoto: photoUrl,
+          pw: "",
+        })
+        .then(() => {
+          location.reload();
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+        });
+    },
+    async checkUser(uid) {
+      var exist;
+      await database
+        .firestore()
+        .collection("users")
+        .doc(uid)
+        .get()
+        .then(async (doc) => {
+          console.log("Exists?" + doc.exists);
+          if (doc.exists) {
+            exist = true;
+          } else {
+            exist = false;
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
+      console.log("asdasdasdasd" + exist);
+      return exist;
     },
     remember_me: function () {
       console.log("Remember me");

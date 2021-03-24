@@ -10,6 +10,7 @@
         style="width: 40%"
       />
       <h3>Manage your subs, POOL your resources</h3>
+      <h4>HOME</h4>
     </div>
     <div id="secDividerBtn">
       <input
@@ -54,6 +55,7 @@
 <script>
 import navbar from "./NavBar";
 export default {
+  //5ANl3lJ5e0Mw8Jw5F572bGK3XY42
   data() {
     return {
       cardlist: [

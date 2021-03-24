@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
+
 Vue.use(Vuex);
+
 export default new Vuex.Store({
     state: {
         user: {
@@ -11,7 +13,7 @@ export default new Vuex.Store({
     getters: {
         user(state) {
             return state.user
-        }
+        },
     },
     mutations: {
         SET_LOGGED_IN(state, value) {
@@ -27,7 +29,8 @@ export default new Vuex.Store({
             if (user) {
                 commit("SET_USER", {
                     displayName: user.displayName,
-                    email: user.email
+                    email: user.email,
+                    uid: user.uid,
                 });
             } else {
                 commit("SET_USER", null);

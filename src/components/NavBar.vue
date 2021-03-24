@@ -46,7 +46,6 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
-//import ProfileDropdown from "@/components/ProfileDropdown.vue";
 import firebase from "firebase";
 export default {
   components: {},

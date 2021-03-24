@@ -1,7 +1,6 @@
-import firebase from 'firebase';
 import Vue from 'vue';
 import Router from 'vue-router';
-
+import store from './store.js'
 import Home from '@/components/Home';
 import Login from '@/components/Login';
 import SignUp from '@/components/SignUp';
@@ -10,15 +9,13 @@ import ActivityFeed from '@/components/ActivityFeed';
 import AboutUs from '@/components/AboutUs';
 import ContactUs from '@/components/ContactUs';
 import PendingPools from '@/components/PendingPools';
+import SetPassword from '@/components/SetPassword';
 
 Vue.use(Router);
 
 const router = new Router({
+    mode: 'history',
     routes: [
-        {
-            path: '*',
-            redirect: '/landing'
-        },
         {
             path: '/',
             redirect: '/landing'
@@ -77,17 +74,30 @@ const router = new Router({
             meta: {
                 requiresAuth: true
             }
+        },
+        {
+            path: '/set-password',
+            name: 'SetPassword',
+            component: SetPassword,
         }
     ]
 });
 
 router.beforeEach((to, from, next) => {
-    const currentUser = firebase.auth().currentUser;
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-    if (requiresAuth && !currentUser && to.path !== '/login') next('landing');
-    else if (!requiresAuth && currentUser && to.path !== '/login') next('home');
-    else next();
+    if (requiresAuth) {
+        if (!store.state.user) {
+            next({
+                path: '/login',
+                query: { redirect: to.fullPath }
+            })
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
 });
 
 export default router;
