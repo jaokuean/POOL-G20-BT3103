@@ -1,10 +1,10 @@
 <template>
-  <div id="app"><SearchPoolPage></SearchPoolPage></div>
+  <div id="app"><PoolGroupsPage></PoolGroupsPage></div>
 </template>
 <script>
-import SearchPoolPage from './components/SearchPoolPage.vue'
+import PoolGroupsPage from './components/PoolGroupsPage.vue'
 export default {
-    components: {SearchPoolPage},
+    components: {PoolGroupsPage},
 }
 </script>
 <style>

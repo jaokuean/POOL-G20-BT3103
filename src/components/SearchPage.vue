@@ -36,21 +36,22 @@ export default {
     },
     methods: {
         fetchData: function() {
-            const collect = database.collection('services');
-            const snapshot = collect.where('serviceName', '==', this.poolName).get();
-            if (snapshot.empty) {
+            //const collect = database.collection("services");
+            //const snapshot = collect.where('serviceName', '==', this.poolName).get();
+            /*if (snapshot.empty) {
                 console.log('No matching documents.');
                 return;
-            }
-            snapshot => {
+            }*/
+            /*snapshot => {
                 this.logo = snapshot.docs[0].data().logo
                 this.description = snapshot.docs[0].data().serviceName + ": " + snapshot.docs[0].data().description + ", fee: " + snapshot.docs[0].data().fee
-            }
+            }*/
 
-            /*database.collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
+            //even only database.collection("services") cannot load, why???
+            database.collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
                 this.logo = d.docs[0].data().logo
                 this.description = d.docs[0].data().serviceName + ": " + d.docs[0].data().description + ", fee: " + d.docs[0].data().fee
-            })*/
+            })
         }, 
     },
 
