@@ -8,15 +8,7 @@
     <p>Let's create a new account !</p>
     <div id="loginBox">
       <p>
-        <button @click="socialLogin" class="googlebtn">
-          <img
-            alt="Google Logo"
-            src="../assets/google-logo.png"
-            width="24px"
-            height="24px"
-          />
-          <span class="googelbtntxt">Google</span>
-        </button>
+        <google-login></google-login>
       </p>
       <p id="divider" style="width: 210px; margin: auto">
         <span id="textDivider">or</span>
@@ -47,7 +39,10 @@
 
  <script>
 import firebase from "firebase";
+import GoogleLogin from "./GoogleLogin.vue";
+
 export default {
+  components: { GoogleLogin },
   name: "signUp",
   data() {
     return {
@@ -70,19 +65,6 @@ export default {
             alert("Oops. " + err.message);
           }
         );
-    },
-    socialLogin: function () {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      firebase
-        .auth()
-        .signInWithPopup(provider)
-        .then((result) => {
-          console.log(result);
-          this.$router.replace("home");
-        })
-        .catch((err) => {
-          alert("error " + err.message);
-        });
     },
   },
 };
