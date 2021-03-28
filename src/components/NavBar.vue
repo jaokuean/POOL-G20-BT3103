@@ -88,6 +88,7 @@ nav ul {
   display: flex;
   margin: 0;
   float: left;
+  height: 70px;
 }
 nav ul li {
   list-style: none;

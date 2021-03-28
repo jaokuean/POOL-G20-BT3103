@@ -1,111 +1,70 @@
 <template>
-  <div class="container">
-    <navbar></navbar>
-
-    <div id="secDividerTop">
-      <img
-        alt="pool logo"
-        src="../assets/pool-logo-name.png"
-        class="logo"
-        style="width: 40%"
-      />
-      <h3>Manage your subs, POOL your resources</h3>
-      <h4>HOME</h4>
-    </div>
-    <div id="secDividerBtn">
-      <input
-        type="text"
-        placeholder="Search.."
-        style="width: 30%; height: 34px; margin: 20px auto"
-        name="search"
-      />
-      <button
-        type="submit"
-        style="width: 90px; background-color: #fff; vertical-align: middle"
-      >
-        <img
-          alt="search logo"
-          src="../assets/search.png"
-          class="logo"
-          style="width: 35px; height: 32px; color: white"
-        />
-      </button>
-      <div class="landingContent">
-        <div class="contentBox">
-          <h3>Trending Searches</h3>
-          <div id="subs-list" v-for="card in cardlist" :key="card">
-            <ul>
-              <li id="cardItems">{{ card.name }}</li>
-            </ul>
-          </div>
-        </div>
-        <div class="contentBox">
-          <h3>Trending Subs</h3>
-          <div id="subs-list" v-for="card in cardlist" :key="card">
-            <ul>
-              <li id="cardItems">{{ card.name }}</li>
-            </ul>
-          </div>
-        </div>
+  <div>
+    <navbar/>
+    <div id='mainContainer'>
+      <activity-feed/>
+      <div id='middleCol'>
+        <searchbar/>
+        <pending-pools v-if='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
+        <pool-profile-page v-else/>
       </div>
+      <account-sidebar v-if='!clickedPool'/>
+      <pool-sidebar v-else/>
     </div>
+    
   </div>
 </template>
 
 <script>
-import navbar from "./NavBar";
+import navbar from './NavBar.vue';
+import ActivityFeed from './ActivityFeed.vue'
+import Searchbar from './Searchbar.vue'
+import AccountSidebar from './AccountSidebar.vue'
+import PendingPools from './PendingPools.vue'
+import PoolProfilePage from './PoolProfilePage.vue'
+import PoolSidebar from './PoolSidebar.vue'
+
 export default {
-  //5ANl3lJ5e0Mw8Jw5F572bGK3XY42
-  data() {
+  data: function () {
     return {
-      cardlist: [
-        { name: "Service 1 card" },
-        { name: "Service 2 card" },
-        { name: "Service 3 card" },
-        { name: "Service 4 card" },
-        { name: "Service 2 card" },
-      ],
-    };
+      clickedPool: false,
+      doubleClickedPools: false,
+    }
   },
   components: {
     navbar,
+    ActivityFeed,
+    Searchbar,
+    AccountSidebar,
+    PendingPools,
+    PoolProfilePage,
+    PoolSidebar
   },
+  methods: {
+    onClicked: function() {
+      this.clickedPool = true;
+    },
+    onDbClicked: function() {
+      this.doubleClickedPools = true;
+      this.clickedPool = false;
+    }
+  }
 };
 </script>
 
-<style>
-#secDividerTop {
-  background-size: cover;
-  background-color: #fff;
-  vertical-align: bottom;
+<style scoped>
+
+#mainContainer {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  margin-top: 10px;
 }
-#secDividerBtn {
-  background-size: cover;
-  background-color: #69bbe9;
-  border-radius: 5px;
+
+#middleCol {
+  margin-top: 10px;
 }
-div.landingContent > div:nth-of-type(odd) {
-  background-color: #fff;
-  color: black;
-}
-div.landingContent > div:nth-of-type(even) {
-  background-color: #69bbe9;
-  color: white;
-}
-.contentBox h3 {
-  text-align: left;
-}
-.contentBox {
-  padding: 25px 25px 75px 25px;
-}
-#subs-list ul {
-  float: left;
-  margin: 0;
-  padding: 10px;
-}
-#subs-list ul li {
-  display: block;
-  list-style: none;
-  margin: auto 50px;
+
+account-sidebar {
+  text-align: center;
 }
 </style>

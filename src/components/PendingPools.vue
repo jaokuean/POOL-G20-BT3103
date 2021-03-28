@@ -12,7 +12,7 @@
         <div id ='myPoolsContainer'>
             <h2>My Pools</h2>
             <ul>
-                <li v-for="pool in myPools" :key="pool.index">
+                <li v-for="pool in myPools" :key="pool.index" @click="oneClick">
                     <img v-bind:src="pool.imgURL"/>
                     <p id='poolDescription'>{{pool.description}}</p>
                 </li>
@@ -39,12 +39,28 @@ export default {
                 {imgURL:'https://www.scdn.co/i/_global/twitter_card-default.jpg',description:'This is some description about this service'},
                 {imgURL:'https://images-na.ssl-images-amazon.com/images/I/41Y-MUPJU7L.png',description:'This is some description about this service'},
                 {imgURL:'https://yt3.ggpht.com/ytc/AAUvwni_LdnpDi-SOIhjp4Kxo2l_yVBoYsfdDCpUM5VDzg=s900-c-k-c0x00ffffff-no-rj',description:'This is some description about this service'},
-            ]
+            ],
+            delay: 700,
+            clicks: 0,
+            timer: null,
         }
     },
     methods: {
         fetchData: function() {
             return false;
+        },
+        oneClick: function() {
+            this.clicks++;
+            if (this.clicks === 1) {
+                this.timer = setTimeout( () => {
+                    this.$emit('clicked')
+                    this.clicks = 0
+                }, this.delay);
+            } else {
+                clearTimeout(this.timer);  
+                this.$emit('dbclicked')
+                this.clicks = 0;
+            }
         }
     },
     created() {
@@ -55,7 +71,7 @@ export default {
 
 <style scoped>
 #mainComponent {
-    width: 60%;
+    width: 90%;
     font-family: Monaco, sans-serif;
 }
 
