@@ -1,32 +1,18 @@
 <template>
-    <div>
-        <nav>
-            <activityFeed id = "activityFeed">
-            </activityFeed>
-        </nav>
-        <nav>
-            <poolSidebar id="poolSidebar">
-            </poolSidebar>
-        </nav>
-        <div class="search-bar">
-            <form class="form-inline">
-                <input type="text" name="search" class="form-control" placeholder="Search"/>
-            </form>
-        </div>
+    <div id='mainComponent'>
         <div id="header">
             <img v-bind:src = "this.logo" id = "servicePic" >
             <h1> {{this.serviceName}} (${{cost}}/mo)</h1>
         </div>
-        <div id = "members">
-            <p> Members </p>
+        <div id='members'>
             <ul>
-                <li v-for="member in memberData" v-bind:key="member.name">
-                    <img v-bind:src = "member.profilePhoto">
+                <li v-for="member in memberData" :key="member.name">
+                    <img v-bind:src="member.profilePhoto"/>
                     <p> {{member.name}} </p>
                 </li>
             </ul>
         </div>
-        <div id = "account-dets">
+        <div id='accountDetails'>
             <p> Username: </p>
             <p v-show="this.show"> {{this.username}} </p>
             <p> Password:  </p>
@@ -42,12 +28,8 @@
 
 <script>
 import database from '../firebase.js'
-import poolSidebar from './PoolSidebar.vue'
-import activityFeed from './ActivityFeed.vue'
 
 export default {
-    components: {poolSidebar, activityFeed},
-
     data() {
         return {
             poolId:  "cFmHko3OJGX9b0p8xFdB" ,//dummy variable that needs to be a prop
@@ -64,13 +46,13 @@ export default {
                 profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
             },
             ], //dummy data
-            username: "",
-            password: "",
+            username: "Someuser",
+            password: "Somepw",
             feed: [{title: "payment", content:"You have paid this amount"},
             {title: "payment2", content:"You have paid this amount"},
             {title: "payment3", content:"You have paid this amount"}],
-            logo: "",
-            serviceName:"",
+            logo: "https://images-na.ssl-images-amazon.com/images/I/41Y-MUPJU7L.png",
+            serviceName:"Straits Times",
             show: false,
             cost:20,
         }
@@ -101,83 +83,72 @@ export default {
 </script>
 
 <style scoped>
-
-#activityFeed{
-    float:left;
-    width: 250px;
+#mainComponent {
+    width: 90%;
+    font-family: Monaco, sans-serif;
 }
 
-#poolSidebar{
-    float:right;
-    width: 250px;
-}
-
-img {
-    border-radius: 50%;
-    position: relative;
-    overflow: hidden;
-    margin: 0;
+#header {
+    align-items: center;
+    display: flex;
+    margin-left: 4em;
+    margin-top: 10px;
     width: 100%;
-    height: 70%;
-    align: center;
-}
-
-#members{
-    background-color: #69BBE9;
-    border-radius: 25px;
-    margin-left: 300px;
-    margin-right: 300px;
-    padding-left: 30px;
-}
-
-#account-dets{
-    background-color: #69BBE9;
-    border-radius: 25px;
-    margin-left: 300px;
-    margin-right: 300px;
-    padding-left: 30px;
-    display: flex;
-    padding:5px;
-}
-
-#account-dets > p {
-    margin: 5px;
-}
-
-ul{
-    display: flex;
-    flex-wrap: wrap;
-    list-style-type: none;
-    width: calc(100% * (1/1.5));
-    justify-content: left;
-}
-li{
-    flex-basis: 65px;
-    text-align: center;
-    padding: 10px;
-    margin: 10px;
-}
-
-
-#header{
-    text-align: center;
-    display: flex;
-    padding-left: 50px;
-    padding-top: 5px;
 }
 
 #servicePic {
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 6em;
+    height: 6em;
+    margin-right: 10px;
 }
 
+#members {
+    background: #69BBE9;
+    border-start-end-radius: 1rem;
+    border-end-end-radius: 1rem;
+    color: white;
+}
+
+ul {
+    padding: 0;
+    margin-left: 3rem;
+}
+
+li {
+    display: inline-block;
+    text-align: center;
+    margin: 1rem;
+    margin-top: 1rem;
+}
+
+#members img {
+    height: 4em;
+    width: 4em;
+    display: block;
+    border-radius: 40%;
+}
+
+#accountDetails{
+    background-color: #69BBE9;
+    display: flex;
+    padding:5px;
+    border-start-end-radius: 1rem;
+    border-end-end-radius: 1rem;
+    color: white;
+}
+
+#accountDetails > p {
+    margin: 5px;
+}
 
 .feed {
-    margin-left: 300px;
-    margin-right: 300px;
-    border: 1px solid #222;
+    border: 3px solid #222;
+    border-radius: 2em;
     margin-top: 10px;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 0.3em;
 }
 
 </style>

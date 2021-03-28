@@ -4,7 +4,7 @@
             <a id = 'title'>
                 ACTIVITY FEED
             </a>
-            <a class="dot"><strong>{{feeds.length}}</strong></a>
+            <a id="feedNumber"><strong>{{feeds.length}}</strong></a>
         </div>
         <ul>
             <li v-for="feed in feeds" :key="feed.index">
@@ -49,25 +49,23 @@ export default {
 
 <style scoped>
 #feedContainer {
-    width: 18%;
     height: 100vh;
 }
 #titleContainer {
     background: #69BBE9;
     height: 2.2vw;
-    width: 20%;
-    display: table-cell;
-    vertical-align: middle;
     border-radius: 0.3vw;
     box-shadow: 1.5px 1.5px #adadad;
+    display: flex;
+    align-items: center;
 }
 #title {
     color: #fff;
     font-size: 1vw;
     font-family: Monaco, sans-serif;
-    margin-left: 2vw;
+    margin-left: 1em;
 }
-.dot {
+#feedNumber {
     color: #fff;
     font-size: 1vw;
     margin-inline-start: 6vw;
@@ -76,7 +74,6 @@ export default {
     background-color: #B4261F;
     border-radius: 50%;
     text-align: center;
-    display: inline-block;
 }
 ul {
     padding:0;

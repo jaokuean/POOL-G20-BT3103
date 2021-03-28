@@ -85,7 +85,7 @@ export default {
     overflow-y: scroll;
     background-color: #FFFFFF;
     right: 0;
-    width: 300px;
+    width: 100%;
 }
 
 
