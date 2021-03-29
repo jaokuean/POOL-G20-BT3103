@@ -1,11 +1,7 @@
 <template>
-  <div id="app"><PoolGroupsPage></PoolGroupsPage></div>
+  <div id="app"><router-view /></div>
 </template>
 <script>
-import PoolGroupsPage from './components/PoolGroupsPage.vue'
-export default {
-    components: {PoolGroupsPage},
-}
 </script>
 <style>
 #app {
@@ -26,3 +22,4 @@ export default {
   color: #42b983;
 }
 </style>
+
