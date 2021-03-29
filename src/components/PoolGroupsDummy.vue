@@ -2,7 +2,6 @@
     <div id='mainComponent'>
         <div id='searchBox'>
             <img v-bind:src="search"/> <input type="text" id="poolName" v-model="poolName">
-            <h3></h3>
         </div>
 
         <div id ='name'>
@@ -75,7 +74,6 @@ export default {
 <style scoped>
 button {
     font-size: 30px;
-    background-color: #69BBE9;
 }
 
 #mainComponent {
@@ -97,19 +95,16 @@ li {
 }
 
 #float1 img {
-    height: 7em;
-    width: 7em;
+    height: 5em;
+    width: 5em;
     display: block;
     border-radius: 50%;
 }
 
 #searchBar {
+    padding-left: 30px;
     padding-top: 200px;
     text-align: left;
-}
-
-#searchBox {
-    padding-left: 50px;
 }
 
 #searchBox img {
@@ -133,7 +128,8 @@ li {
 #float01 {
     display: block;
     border-radius: 50%;
-    width:20%;
+    height: 3em;
+    width: 3em;
     float:left;
 }
 
@@ -167,11 +163,20 @@ li {
 
 #float4 {
     float:left;
-    padding-left:75px;
+    padding-left:62px;
+    padding-top:5px;
 }
 
 #float5 {
     padding-top: 0.1px;
+    background:  #69BBE9;
+    padding-left: 80px;
+    width: 400px;
+    height:50px;
+    border-start-end-radius: 1rem;
+    border-end-end-radius: 1rem;
+    color:white;
+    text-align: center;
 }
 
 #notFull {
@@ -180,5 +185,9 @@ li {
 
 #full {
     background-color: #db5858;
+}
+
+#result {
+    padding-left: 50px;
 }
 </style>

@@ -27,7 +27,6 @@
 </template>
 
 <script>
-//how to move the search icon a bit downwards, padding-top does not work, can put icon inside input??
 export default {
     data: function() {
         return {

@@ -41,13 +41,13 @@ export default {
             /*if (snapshot.empty) {
                 console.log('No matching documents.');
                 return;
-            }*/
-            /*snapshot => {
+            }
+            snapshot => {
                 this.logo = snapshot.docs[0].data().logo
                 this.description = snapshot.docs[0].data().serviceName + ": " + snapshot.docs[0].data().description + ", fee: " + snapshot.docs[0].data().fee
             }*/
 
-            //even only database.collection("services") cannot load, why???
+            //even only database.collection("services") cannot load
             database.collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
                 this.logo = d.docs[0].data().logo
                 this.description = d.docs[0].data().serviceName + ": " + d.docs[0].data().description + ", fee: " + d.docs[0].data().fee
