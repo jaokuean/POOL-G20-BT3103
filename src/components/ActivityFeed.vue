@@ -49,7 +49,7 @@ export default {
         fetchFeeds: function() {
             //Getting feeds
             const uid = this.$store.getters.user.data.uid;
-            console.log(uid)
+            let tempFeeds = [];
             database.firestore().collection('activities').get().then( (querySnapShot) => {
                 querySnapShot.forEach((doc) => {
                     const feedData = doc.data();
@@ -57,12 +57,20 @@ export default {
                         let feedObject = {};
                         feedObject['title'] = feedData.title;
                         feedObject['description'] = feedData.content;
+                        feedObject['date'] = feedData.dateCreated.toDate();
                         // Getting image of the service involved
-                        database.firestore().collection('services').doc(feedData.pool).get().then((docSnapShot) => {
+                        database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
                             if (docSnapShot.exists) {
-                                feedObject['imgURL'] = docSnapShot.data().logo
+                                database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
+                                    if (docSnapShot.exists) {
+                                        feedObject['imgURL'] = docSnapShot.data().logo;
+                                    } else {
+                                        console.log("Services for this activity does not exist");
+                                    }
+                                })
+                                
                             } else {
-                                console.log("Service for this activity does not exist");
+                                console.log("Pool for this activity does not exist");
                             }
                         })
 
@@ -72,9 +80,12 @@ export default {
                         } else {
                             feedObject.shortDescription = feedObject.description;
                         }
-                        this.feeds.push(feedObject);
+                        tempFeeds.push(feedObject);
                     }
                 })
+            }).then(() => {
+                // Sort array according to date
+                this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
             })
         },
         popup: function(index) {
