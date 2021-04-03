@@ -10,7 +10,7 @@
             </div>
             <div id = "right">
                 <br>
-                <SearchPageDummy id = "searchpage"></SearchPageDummy>
+                <SearchPage id = "searchpage"></SearchPage>
             </div>
         </div>
     </div>
@@ -19,11 +19,11 @@
 <script>
 //import database from '../firebase.js'
 import activityFeed from './ActivityFeed.vue'
-import SearchPageDummy from './SearchPageDummy.vue'
+import SearchPage from './SearchPage.vue'
 import navbar from "./NavBar";
 
 export default {
-    components: {activityFeed, navbar, SearchPageDummy},
+    components: {activityFeed, navbar, SearchPage},
 
     data() {
     }
