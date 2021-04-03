@@ -15,7 +15,7 @@
             <br>
             <br>
             <div id='float1'>
-                <img v-bind:src="logo"/>
+                <img v-bind:src="logo" v-bind:id="serviceID" v-on:click="route($event)"/>
             </div>
             <div id='float2'>
                 {{description}}
@@ -32,6 +32,7 @@ export default {
         return {
             poolName:'Netflix',
             search:'https://static.thenounproject.com/png/101791-200.png',
+            serviceID: "",
             logo: "",
             description:""
         }
@@ -41,10 +42,15 @@ export default {
             //only exact searches
             //press enter to begin the search
             database.firestore().collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
+                this.serviceID = d.docs[0].id
                 this.logo = d.docs[0].data().logo
                 this.description = d.docs[0].data().serviceName + ": " + d.docs[0].data().description + "\n" + "fee: $" + d.docs[0].data().fee + "\n" + "website link: " + d.docs[0].data().website
             })
-        }, 
+        },
+        route: function(event) {
+            let doc_id = event.target.getAttribute("id")
+            this.$router.push({ name: 'PoolGroups', params: { document_id: doc_id } })
+        }
     },
 
     created() {

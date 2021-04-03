@@ -1,12 +1,7 @@
 <template>
-  <div id="app"><SearchPoolPage></SearchPoolPage></div>
+  <div id="app"><router-view /></div>
 </template>
 <script>
-import SearchPoolPage from './components/SearchPoolPage.vue'
-
-export default {
-    components: {SearchPoolPage},
-}
 </script>
 <style>
 #app {
