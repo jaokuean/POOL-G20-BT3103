@@ -11,11 +11,11 @@
           </span>
           <searchbar/>
           <pending-pools v-if='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
-          <pool-profile-page v-else/>
+          <pool-profile-page v-bind:pool='pool' v-else/>
         </div>
         <div id='rightCol'>
           <account-sidebar v-if='!clickedPool'/>
-          <pool-sidebar v-else/>
+          <pool-sidebar v-bind:pool="pool" v-else/>
         </div>
       </div>
     </div>
@@ -37,6 +37,7 @@ export default {
       clickedPool: false,
       doubleClickedPools: false,
       activityOpen: true,
+      pool:{},
     }
   },
   components: {
@@ -49,12 +50,14 @@ export default {
     PoolSidebar
   },
   methods: {
-    onClicked: function() {
+    onClicked: function(pool) {
       this.clickedPool = true;
+      this.pool = pool;
     },
-    onDbClicked: function() {
+    onDbClicked: function(pool) {
       this.doubleClickedPools = true;
       this.clickedPool = false;
+      this.pool = pool;
     },
     toggle: function() {
       if (this.activityOpen) {

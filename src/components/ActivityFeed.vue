@@ -47,45 +47,51 @@ export default {
     },
     methods: {
         fetchFeeds: function() {
-            //Getting feeds
+            //Setting up references and user ID
             const uid = this.$store.getters.user.data.uid;
+            const poolgroups_ref = database.firestore().collection('poolgroups');
+            const activities_ref = database.firestore().collection('activities')
             let tempFeeds = [];
-            database.firestore().collection('activities').get().then( (querySnapShot) => {
-                querySnapShot.forEach((doc) => {
-                    const feedData = doc.data();
-                    if (feedData.user == uid) {
-                        let feedObject = {};
-                        feedObject['title'] = feedData.title;
-                        feedObject['description'] = feedData.content;
-                        feedObject['date'] = feedData.dateCreated.toDate();
-                        // Getting image of the service involved
-                        database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
-                            if (docSnapShot.exists) {
-                                database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
-                                    if (docSnapShot.exists) {
-                                        feedObject['imgURL'] = docSnapShot.data().logo;
-                                    } else {
-                                        console.log("Services for this activity does not exist");
-                                    }
-                                })
-                                
-                            } else {
-                                console.log("Pool for this activity does not exist");
-                            }
-                        })
+            //Gets pools of user
+            poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
+                querySnapShot.forEach((doc)=> {
+                    // Get the activity feeds using poolID
+                    activities_ref.where("pool","==",doc.data().poolID).get().then((querySnapShot) => {
+                        querySnapShot.forEach((doc) => {
+                            const feedData = doc.data();
+                            let feedObject = {};
+                            feedObject['title'] = feedData.title;
+                            feedObject['description'] = feedData.content;
+                            feedObject['date'] = feedData.dateCreated.toDate();
+                            // Getting image of the service involved
+                            database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
+                                if (docSnapShot.exists) {
+                                    database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
+                                        if (docSnapShot.exists) {
+                                            feedObject['imgURL'] = docSnapShot.data().logo;
+                                        } else {
+                                            console.log("Services for this activity does not exist");
+                                        }
+                                    }) 
+                                } else {
+                                    console.log("Pool for this activity does not exist");
+                                }
+                            })
 
-                        // Create short message
-                        if (feedObject.description.length > 76) {
-                            feedObject.shortDescription = feedObject.description.slice(0,76) + '...';
-                        } else {
-                            feedObject.shortDescription = feedObject.description;
-                        }
-                        tempFeeds.push(feedObject);
-                    }
-                })
-            }).then(() => {
-                // Sort array according to date
-                this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
+                            // Create short message
+                            if (feedObject.description.length > 76) {
+                                feedObject.shortDescription = feedObject.description.slice(0,76) + '...';
+                            } else {
+                                feedObject.shortDescription = feedObject.description;
+                            }
+                            tempFeeds.push(feedObject);
+                            
+                        });
+                    }).then(() => {
+                        // Sort array according to date
+                        this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
+                    });
+                });
             })
         },
         popup: function(index) {
