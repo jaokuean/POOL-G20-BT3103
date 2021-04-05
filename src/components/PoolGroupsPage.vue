@@ -10,20 +10,19 @@
             </div>
             <div id = "right">
                 <br>
-                <PoolGroupsDummy id = "poolgroups"></PoolGroupsDummy>
+                <PoolGroupsFirestore id = "poolgroups"></PoolGroupsFirestore>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-//cannot edit the height of navbar???
 import activityFeed from './ActivityFeed.vue'
-import PoolGroupsDummy from './PoolGroupsDummy.vue'
+import PoolGroupsFirestore from './PoolGroupsFirestore.vue'
 import navbar from "./NavBar";
 
 export default {
-    components: {activityFeed, navbar, PoolGroupsDummy},
+    components: {activityFeed, navbar, PoolGroupsFirestore},
 
     data() {
     }
