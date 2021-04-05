@@ -1,7 +1,7 @@
 <template>
     <div id='mainComponent'>
         <div id='searchBox'>
-            <img v-bind:src="search"/> <input type="text" id="poolName" v-model="poolName">
+            <img v-bind:src="search"/> <input type="text" id="poolName" v-model="poolName" v-on:keyup.enter="fetchData">
             <h3></h3>
         </div>
 
@@ -12,8 +12,10 @@
         </div>
 
         <div id = "result">
+            <br>
+            <br>
             <div id='float1'>
-                <img v-bind:src="logo"/>
+                <img v-bind:src="logo" v-bind:id="serviceID" v-on:click="route($event)"/>
             </div>
             <div id='float2'>
                 {{description}}
@@ -30,29 +32,25 @@ export default {
         return {
             poolName:'Netflix',
             search:'https://static.thenounproject.com/png/101791-200.png',
+            serviceID: "",
             logo: "",
             description:""
         }
     },
     methods: {
         fetchData: function() {
-            //const collect = database.collection("services");
-            //const snapshot = collect.where('serviceName', '==', this.poolName).get();
-            /*if (snapshot.empty) {
-                console.log('No matching documents.');
-                return;
-            }
-            snapshot => {
-                this.logo = snapshot.docs[0].data().logo
-                this.description = snapshot.docs[0].data().serviceName + ": " + snapshot.docs[0].data().description + ", fee: " + snapshot.docs[0].data().fee
-            }*/
-
-            //even only database.collection("services") cannot load
-            database.collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
+            //only exact searches
+            //press enter to begin the search
+            database.firestore().collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
+                this.serviceID = d.docs[0].id
                 this.logo = d.docs[0].data().logo
-                this.description = d.docs[0].data().serviceName + ": " + d.docs[0].data().description + ", fee: " + d.docs[0].data().fee
+                this.description = d.docs[0].data().serviceName + ": " + d.docs[0].data().description + "\n" + "fee: $" + d.docs[0].data().fee + "\n" + "website link: " + d.docs[0].data().website
             })
-        }, 
+        },
+        route: function(event) {
+            let doc_id = event.target.getAttribute("id")
+            this.$router.push({ name: 'PoolGroups', params: { document_id: doc_id } })
+        }
     },
 
     created() {
@@ -121,11 +119,14 @@ li {
 }
 
 #float1 {
+    padding-left:45px;
     width:20%;
     float:left;
 }
 
 #float2 {
+    padding-left:200px;
     padding-top:15px;
+    white-space: pre-line;
 }
 </style>
