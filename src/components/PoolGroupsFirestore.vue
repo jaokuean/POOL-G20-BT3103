@@ -10,7 +10,6 @@
       />
     </div>
 
-            <div id='float01'>
     <div id="name">
       <div id="float01">
         <img v-bind:src="imgURL" />
