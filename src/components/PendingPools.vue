@@ -2,19 +2,21 @@
     <div id='mainComponent'>
         <div id='pendingPoolsContainer'>
             <h2>Pending Pools</h2>
+            <p class="noPoolsMsg" v-show="pendingPools.length==0"><i>You have no pending pools</i></p>
             <ul>
-                <li v-for="pendingPool in pendingPools" :key="pendingPool.index">
-                    <img v-bind:src="pendingPool.imgURL"/>
-                    {{pendingPool.members}}
+                <li class='poolItem' v-for="pendingPool in pendingPools" :key="pendingPool.index">
+                    <img v-bind:src="pendingPool.logo"/>
+                    {{pendingPool.fill}}
                 </li>
             </ul>
         </div>
         <div id ='myPoolsContainer'>
             <h2>My Pools</h2>
+            <p class="noPoolsMsg" v-show="myPools.length==0"><i>You have no pools, get started by adding a subscription!</i></p>
             <ul>
-                <li v-for="pool in myPools" :key="pool.index" @click="oneClick">
-                    <img v-bind:src="pool.imgURL"/>
-                    <p id='poolDescription'>{{pool.description}}</p>
+                <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)">
+                    <img v-bind:src="pool.logo"/>
+                    <p id='poolDescription'>{{pool.poolName}}</p>
                 </li>
             </ul>
             <div id='addSubContainer'>
@@ -27,19 +29,13 @@
 </template>
 
 <script>
+import database from '../firebase';
+
 export default {
     data: function() {
         return {
-            pendingPools: [
-                {imgURL:'https://www.scdn.co/i/_global/twitter_card-default.jpg',members:'3/4'},
-                {imgURL:'https://images-na.ssl-images-amazon.com/images/I/41Y-MUPJU7L.png',members:'4/5'},
-                {imgURL:'https://yt3.ggpht.com/ytc/AAUvwni_LdnpDi-SOIhjp4Kxo2l_yVBoYsfdDCpUM5VDzg=s900-c-k-c0x00ffffff-no-rj',members:'5/6'},
-            ],
-            myPools: [
-                {imgURL:'https://www.scdn.co/i/_global/twitter_card-default.jpg',description:'This is some description about this service'},
-                {imgURL:'https://images-na.ssl-images-amazon.com/images/I/41Y-MUPJU7L.png',description:'This is some description about this service'},
-                {imgURL:'https://yt3.ggpht.com/ytc/AAUvwni_LdnpDi-SOIhjp4Kxo2l_yVBoYsfdDCpUM5VDzg=s900-c-k-c0x00ffffff-no-rj',description:'This is some description about this service'},
-            ],
+            pendingPools: [],
+            myPools: [],
             delay: 700,
             clicks: 0,
             timer: null,
@@ -47,24 +43,54 @@ export default {
     },
     methods: {
         fetchData: function() {
-            return false;
+            const uid = this.$store.getters.user.data.uid;
+            const poolgroups_ref = database.firestore().collection('poolgroups');
+            const pools_ref = database.firestore().collection('pools');
+            const services_ref = database.firestore().collection('services');
+            //Gets pools of user
+            poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
+                querySnapShot.forEach((doc)=> {
+                    // Gets the pool using poolID
+                    const poolID = doc.data().poolID;
+                    pools_ref.doc(poolID).get().then((doc) => {
+                        const pool = doc.data();    
+                        pool['poolID'] = poolID;
+                        // Gets the service that is provided in the pool
+                        services_ref.doc(pool.serviceId).get().then((doc) => {
+                            const service = doc.data();
+                            pool['fee'] = service.fee;
+                            pool['logo'] = service.logo;
+                            pool['serviceName'] = service.serviceName;
+                            pool['serviceDescription'] = service.description;
+                        }).then(()=> {
+                            // Checks whether it is a pending pool and puts into the correct basket
+                            if (pool.remaining == 0) {
+                                this.myPools.push(pool);
+                            } else {
+                                pool['fill'] = (pool.maxSize - pool.remaining).toString() + "/" + pool.maxSize.toString();
+                                this.pendingPools.push(pool);
+                            }
+                        })
+                    })
+                });
+            })
         },
-        oneClick: function() {
+        oneClick: function(pool) {
             this.clicks++;
             if (this.clicks === 1) {
                 this.timer = setTimeout( () => {
-                    this.$emit('clicked')
-                    this.clicks = 0
+                    this.$emit('clicked', pool);
+                    this.clicks = 0;
                 }, this.delay);
             } else {
                 clearTimeout(this.timer);  
-                this.$emit('dbclicked')
+                this.$emit('dbclicked', pool);
                 this.clicks = 0;
             }
         }
     },
     created() {
-        this.fetchData;
+        this.fetchData();
     }
 }
 </script>
@@ -81,6 +107,16 @@ export default {
     border-end-end-radius: 1rem;
     color: white;
 }
+
+.noPoolsMsg {
+    margin-left: 4rem;
+    padding-bottom: 1em;
+}
+
+.poolItem {
+    cursor: pointer;
+}
+
 h2 {
     margin-left: 4rem;
     padding-top: 1rem;

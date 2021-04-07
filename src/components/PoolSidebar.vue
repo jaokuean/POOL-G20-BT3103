@@ -2,13 +2,13 @@
     <div class = "main-wrapper">
         <div class = "sidebar-container">
             <div id = "sidebar-header">
-                <img v-bind:src = "this.imageUrl" id = "servicePic" >
-                <h1> {{this.serviceName}} </h1>
+                <img v-bind:src = "pool.logo" id = "servicePic" >
+                <h1> {{pool.serviceName}} </h1>
                 <p> Monthly Cost</p>
-                 <p id = "costbox" >${{this.cost}}</p>
+                <p id = "costbox" >${{pool.fee}}</p>
             </div>
-            <div class = "members">
-                <p> Members </p>
+            <div id = "members-container">
+                <p><strong> Members </strong></p>
                 <ul>
                     <li v-for="member in members" v-bind:key="member.name">
                         <img v-bind:src = "member.profilePhoto">
@@ -26,50 +26,27 @@ import database from '../firebase.js'
 export default {
     data() {
         return {
-            imageUrl: "",
-            poolId: "cFmHko3OJGX9b0p8xFdB" ,//dummy variable that needs to be a prop
-            serviceName: "Straits Times",
-            cost: 20,
-            staticImgUrl: "https://aseanup.com/wp-content/uploads/2015/04/HkmsHBTM_400x400.jpg",
-            members: [{
-                name: "John Tin",
-                profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
-            },
-            {
-                name: "John Ton",
-                profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
-            },
-            {
-                name: "John Tun",
-                profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
-            },
-            ], //dummy data
-            poolData: {},
+            members:[]
         }
     }, 
-
+    props: ['pool'],
     created() {
-        this.fetchPool();
+        this.fetchMembers();
+        console.log(this.pool);
     },
-
     methods: {
-        fetchPool: function() {
-            database.collection("pools").doc(this.poolId).get().then((doc) => {
-                Object.assign(this.poolData, doc.data())
-                database.collection("services").where("serviceId", "==",doc.data().serviceId).get().then((d)=>{
-                    this.imageUrl = d.docs[0].data().logo
-                    this.serviceName = d.docs[0].data().serviceName
-                })
-                doc.data().members.forEach(m=>{
-                    database.collection('users').doc(m).get().then(dd => {
-                        this.members.push(dd.data())
+        fetchMembers: function() {
+            const poolgroups_ref = database.firestore().collection('poolgroups');
+            const users_ref = database.firestore().collection('users');
+            // Getting members using poolGroups
+            poolgroups_ref.where("poolID","==",this.pool.poolID).get().then((querySnapShot) => {
+                querySnapShot.forEach((doc) => {
+                    users_ref.doc(doc.data().userID).get().then((doc) => {
+                        this.members.push(doc.data());
                     })
                 })
             })
-    
         },
-
-
     }
 }
 
@@ -86,6 +63,7 @@ export default {
     background-color: #FFFFFF;
     right: 0;
     width: 100%;
+    align-items: center;
 }
 
 
@@ -107,18 +85,15 @@ li > img {
     margin: 0;
     width: 70%;
     height: 50%;
-    align: center;
 }
 
 ul{
-    display: flex;
     flex-wrap: wrap;
     list-style-type: none;
     width: calc(100% * (1/1.5));
     justify-content: center;
 }
 li{
-    flex-basis: 65px;
     text-align: center;
     padding: 10px;
     margin: 10px;
@@ -129,20 +104,27 @@ li{
     text-align: center;
 }
 
-.members {
+#members-container {
     background-color: #69BBE9;
-    display: inline-block;
-    border-radius: 20%;
+    border-radius: 1em;
     text-align: center;
     justify-content: center;
+    margin: auto;
+}
+
+#members-container p:first-child {
+    padding-top: 0.5em;
+    color: white;
+    font-size: 1.5em;
+    width: 100%;
 }
 
 #costbox {
     padding: 10px; 
     background-color: #c4c3d0;
-    margin-left: 40%;
-    margin-right: 40%;
-    border-radius: 30%;
+    margin: auto;
+    border-radius: 1em;
+    display: inline-block;
 }
 
 

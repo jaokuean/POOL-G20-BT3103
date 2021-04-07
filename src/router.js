@@ -10,6 +10,8 @@ import AboutUs from '@/components/AboutUs';
 import ContactUs from '@/components/ContactUs';
 import PendingPools from '@/components/PendingPools';
 import SetPassword from '@/components/SetPassword';
+import SearchPoolPage from '@/components/SearchPoolPage';
+import PoolGroupsPage from '@/components/PoolGroupsPage';
 
 Vue.use(Router);
 
@@ -79,6 +81,23 @@ const router = new Router({
             path: '/set-password',
             name: 'SetPassword',
             component: SetPassword,
+        },
+        {
+            path: '/search-service',
+            name:'SearchService',
+            component: SearchPoolPage,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/pool-groups',
+            name:'PoolGroups',
+            component: PoolGroupsPage, 
+            props: true,
+            meta: {
+                requiresAuth: true
+            }
         }
     ]
 });

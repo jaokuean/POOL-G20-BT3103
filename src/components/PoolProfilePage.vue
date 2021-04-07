@@ -1,12 +1,12 @@
 <template>
     <div id='mainComponent'>
         <div id="header">
-            <img v-bind:src = "this.logo" id = "servicePic" >
-            <h1> {{this.serviceName}} (${{cost}}/mo)</h1>
+            <img v-bind:src = "pool.logo" id = "servicePic" >
+            <h1> {{pool.serviceName}} (${{pool.fee}}/mo)</h1>
         </div>
         <div id='members'>
             <ul>
-                <li v-for="member in memberData" :key="member.name">
+                <li v-for="member in members" :key="member.name">
                     <img v-bind:src="member.profilePhoto"/>
                     <p> {{member.name}} </p>
                 </li>
@@ -14,14 +14,36 @@
         </div>
         <div id='accountDetails'>
             <p> Username: </p>
-            <p v-show="this.show"> {{this.username}} </p>
+            <p v-show="this.show"> {{pool.sharedUserName}} </p>
             <p> Password:  </p>
-            <p v-show="this.show"> {{this.password}} </p>
+            <p v-show="this.show"> {{pool.sharedPassword}} </p>
             <button id="show-dets" v-on:click="show = !show">Show Details </button>
         </div>
-        <div class = "feed" v-for="f in feed" v-bind:key="f.title" >
-            <h1> {{f.title}} </h1>
-            <p> {{f.content}} </p>
+        <div id='writeMsgBtnWrapper'>
+            <a id='writeMsgBtn' @click="popup">Write a message! +</a>
+        </div>
+        <ul id="feedsList">
+            <li class="feedsListItem" v-for="feed in feeds" v-bind:key="feed.index" >
+                <h3>{{feed.title}}</h3>
+                <p>{{feed.content}}</p>
+                <p class="feedDate">{{feed.date}}</p>
+            </li>
+        </ul>
+
+        <!-- Modal form -->
+        <div id="myModalForm" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id='msgBox'>
+                    <h2>Message</h2>
+                    <textarea id='inputMsg' rows="6" v-model="inputMsg"/>
+                </div>
+                <div id='commentBtnWrapper'>
+                    <a id='commentBtn' @click="comment">Comment</a>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -32,50 +54,100 @@ import database from '../firebase.js'
 export default {
     data() {
         return {
-            poolId:  "cFmHko3OJGX9b0p8xFdB" ,//dummy variable that needs to be a prop
-            memberData:  [{
-                name: "John Tin",
-                profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
-            },
-            {
-                name: "John Ton",
-                profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
-            },
-            {
-                name: "John Tun",
-                profilePhoto: "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/01/17/twitter-egg.jpg?width=982&height=726",
-            },
-            ], //dummy data
-            username: "Someuser",
-            password: "Somepw",
-            feed: [{title: "payment", content:"You have paid this amount"},
-            {title: "payment2", content:"You have paid this amount"},
-            {title: "payment3", content:"You have paid this amount"}],
-            logo: "https://images-na.ssl-images-amazon.com/images/I/41Y-MUPJU7L.png",
-            serviceName:"Straits Times",
+            members:[],
+            feeds:[],
             show: false,
-            cost:20,
+            clicked:false,
+            inputMsg:"",
         }
     },
-
-    methods : {
+    props:['pool'],
+    methods: {
         fetchData: function() {
-            database.collection('pools').doc(this.poolId).get().then(doc=>{
-                this.username = doc.data().sharedUserName
-                this.password = doc.data().sharedPassword
-                doc.data().members.forEach(m => {
-                    database.collection('users').doc(m).get().then(d =>{
-                        this.memberData.push(d.data())
+            const poolgroups_ref = database.firestore().collection('poolgroups');
+            const users_ref = database.firestore().collection('users');
+            const activities_ref = database.firestore().collection('activities');
+            // Getting members using poolGroups
+            poolgroups_ref.where("poolID","==",this.pool.poolID).get().then((querySnapShot) => {
+                querySnapShot.forEach((doc) => {
+                    const uid = doc.data().userID;
+                    users_ref.doc(uid).get().then((doc) => {
+                        let member = doc.data();
+                        member['userID'] = uid;
+                        this.members.push(member);
                     })
                 })
-                database.collection("services").where("serviceId", "==",doc.data().serviceId).get().then((d)=>{
-                    this.logo = d.docs[0].data().logo
-                    this.serviceName = d.docs[0].data().serviceName
-                })
+            }).then(() => {
+                // Getting feeds
+                let tempFeeds = [];
+                activities_ref.where("pool","==",this.pool.poolID).get().then((querySnapShot) => {
+                    querySnapShot.forEach((doc) => {
+                        let feed = doc.data();
+                        feed['date'] = feed.dateCreated.toDate();
+                        let filtered = this.members.filter((member) => {
+                            return member.userID == feed.user;
+                        })
+                        if (feed['title'] == "Message") {
+                            feed['title'] = 'Message from ' + filtered[0].name;
+                        }
+                        tempFeeds.push(feed);
+                    });
+                }).then(() => {
+                    // Sort array according to date
+                    this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
+                });
             })
-        }, 
-    },
+        },
+        popup: function() {
+            // Get the modal
+            var modal = document.getElementById("myModalForm");
 
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[1];
+
+            modal.style.display = "block";
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        },
+        comment: function() {
+            const msg = this.inputMsg.trim();
+            if (msg.length == 0) {
+                return alert("Please write something!");
+            }
+            // Create feed object for message and write to database
+            let feed = {};
+            feed['content'] = msg;
+            feed['title'] = 'Message';
+            feed['user'] = this.$store.getters.user.data.uid;
+            feed['pool'] = this.pool.poolID;
+            feed['dateCreated'] = database.firestore.Timestamp.fromDate(new Date());
+            database.firestore().collection('activities').add(feed).then((docref) => {
+                console.log("write successful " + docref);
+            });
+
+            // Add to current feeds so there is no lag on display
+            feed['title'] = 'Message from '+ this.$store.getters.user.data.displayName;
+            feed['date'] = feed.dateCreated.toDate();
+            this.feeds.push(feed);
+            this.feeds=this.feeds.sort((a,b)=>b.date - a.date);
+
+            // Close modal
+            var modal = document.getElementById("myModalForm");
+            modal.style.display="none";
+            this.inputMsg="";
+            alert('Message written succesfully!')
+        }
+    },
     created() {
         this.fetchData()
     },
@@ -110,12 +182,12 @@ export default {
     color: white;
 }
 
-ul {
+#members ul {
     padding: 0;
     margin-left: 3rem;
 }
 
-li {
+#members li {
     display: inline-block;
     text-align: center;
     margin: 1rem;
@@ -142,13 +214,98 @@ li {
     margin: 5px;
 }
 
-.feed {
+#writeMsgBtnWrapper {
+    text-align: right;
+    padding: 1em;
+}
+
+#writeMsgBtn {
+    padding:0.5em;
+    background: #69BBE9;
+    color: white;
+    border-radius: 1em;
+    box-shadow: 0 2px 4px 0 rgba(117, 117, 117, 0.2), 0 3px 10px 0 rgba(117, 117, 117, 0.19);
+    cursor: pointer;
+}
+
+#feedsList {
+    padding:0;
+    margin-top: 3px;
+    max-height: 50vh;   
+    overflow-y: scroll;  
+    overflow-x : hidden;
+}
+
+.feedsListItem {
     border: 3px solid #222;
     border-radius: 2em;
     margin-top: 10px;
-    margin-left: 1em;
-    margin-right: 1em;
     padding: 0.3em;
 }
 
+.feedDate {
+    text-align: right;
+    font-size: 0.8em;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 1em;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#inputMsg {
+    width: 90%;
+    border-color: #222;
+    border-radius: 2px;
+}
+
+#commentBtnWrapper {
+    text-align: right;
+    padding-right: 10%;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+#commentBtn {
+    padding:0.5em;
+    background: #69BBE9;
+    color: white;
+    border-radius: 1em;
+    box-shadow: 0 2px 4px 0 rgba(117, 117, 117, 0.2), 0 3px 10px 0 rgba(117, 117, 117, 0.19);
+    cursor: pointer;
+}
 </style>
