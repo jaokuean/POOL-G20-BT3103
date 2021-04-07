@@ -7,11 +7,19 @@
 
         <div id ='creditCard'>
             <h3>Credit Card Information</h3>
-            <p>
+            <div>
                 Bank Name: {{bankname}}
                 <br>
-                Credit Card Number: {{creditNum}}
-            </p>
+                Credit Card Number: {{creditNum}} <br><br>
+                <button type = "button" v-on:click="updateCard = !updateCard" v-show="!updateCard"> Update Card</button>
+                <form v-show='updateCard'>
+                    <label for="newCrediCard"> Please enter your  new credit card number </label> <br>
+                    <input id="newCreditCard" type="number" v-model.lazy = "newCC"> <br><br>
+                    <label for="newCvc"> Please enter the CVC for your credit card </label> <br>
+                    <input id="newCvc" type="number" v-model.lazy = "newCVC"> <br><br>
+                    <input type="submit" value="Update Card" v-on:click.prevent="updateCreditCard()">
+                </form>
+            </div>
             <h3>Monthly Spending: ${{monSpending.toFixed(2)}}</h3>
         </div>
 
@@ -48,7 +56,10 @@ export default {
             bankname: "United Overseas Bank Limited",
             copy:'https://image.flaticon.com/icons/png/512/88/88026.png',
             closeEye:'https://s3.amazonaws.com/iconbros/icons/icon_pngs/000/000/036/original/eye-closed.png?1509903854',
-            pools: []
+            pools: [], 
+            updateCard: false,
+            newCC: 0,
+            newCVC: 0,
         }
     },
     methods: {
@@ -84,10 +95,32 @@ export default {
                     this.pools.push(p)
                 })
             })
+        },
 
+        updateCreditCard : function() {
+            const cardRef = database.firestore().collection('creditcards')
+            const uid = "1LZ4ZCiJOUN3ueGg6JL4jN4uU5y2" //this.$store.getters.user.data.uid;
+            cardRef.where("userID", "==", uid).get().then(querySnapShot=>{
+                if (querySnapShot.empty) {
+                    cardRef.add({
+                        cardName: this.username,
+                        cardNumber: this.newCC,
+                        cvc: this.newCVC,
+                        cardExpiry: database.firestore.FieldValue.serverTimestamp(),
+                        userID: uid
+                    })
+                } else {
+                    querySnapShot.forEach(doc=>{
+                        doc.ref.update({
+                            cardNumber: this.newCC,
+                            cvc: this.newCVC,
+                        })
+                    })
+                }
+            })
+            this.updateCard = !this.updateCard
 
-            return false;
-        }
+        },
     },
     created() {
         this.fetchData();
