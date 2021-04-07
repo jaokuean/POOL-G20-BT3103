@@ -2,9 +2,8 @@
     <div>
         {{users}}
         {{loops}}
-        {{this.lorem.length}}
         <button type = "button" v-on:click="getPoolMembers"> getPoolMembers </button>
-        <button type = "button" v-on:click="fixActivityFeed"> fixActivityFeed </button>
+        <button type = "button" v-on:click="fakeCreditCard"> fakeCreditCard</button>
     </div>
 </template>
 
@@ -145,14 +144,24 @@ export default {
             })
         },
 
-        fixActivityFeed : function() {
-             database.firestore().collection('activities').get().then(querySnapshot => {
-                 querySnapshot.forEach(doc=> {
-                     doc.ref.update({
-                         content: this.lorem.slice(0, Math.floor(Math.random() * this.lorem.length))
-                     })
-                 })
-             })
+        fakeCreditCard: function() {
+            const creditCardRef =  database.firestore().collection('creditcards')
+            database.firestore().collection('users').get().then(querySnapShot=>{
+                querySnapShot.forEach(doc=>{
+                    const rand = Math.random()
+                    if (rand >= 0.6) {
+                         creditCardRef.add({
+                            cardName : doc.data().name,
+                            cardNumber: rand * Math.pow(10, 16),
+                            cvc: (rand * rand * 100).toFixed(0),
+                            cardExpiry: database.firestore.FieldValue.serverTimestamp(),
+                            userID: doc.id,
+                         })
+                        this.loops++
+                        this.users.push(doc.data().name)
+                    }
+                })
+            })
         },
         
     }, 
