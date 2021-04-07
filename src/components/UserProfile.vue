@@ -48,9 +48,7 @@ export default {
             bankname: "United Overseas Bank Limited",
             copy:'https://image.flaticon.com/icons/png/512/88/88026.png',
             closeEye:'https://s3.amazonaws.com/iconbros/icons/icon_pngs/000/000/036/original/eye-closed.png?1509903854',
-            pools: [
-                {imgURL:'https://www.scdn.co/i/_global/twitter_card-default.jpg',name:'pool1'},
-            ]
+            pools: []
         }
     },
     methods: {
