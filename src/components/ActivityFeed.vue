@@ -51,12 +51,14 @@ export default {
             const uid = this.$store.getters.user.data.uid;
             const poolgroups_ref = database.firestore().collection('poolgroups');
             const activities_ref = database.firestore().collection('activities')
-            let tempFeeds = [];
             //Gets pools of user
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
                 querySnapShot.forEach((doc)=> {
                     // Get the activity feeds using poolID
-                    activities_ref.where("pool","==",doc.data().poolID).get().then((querySnapShot) => {
+                    activities_ref.where("pool","==",doc.data().poolID).onSnapshot((querySnapShot) => {
+                        this.feeds = [];
+                        let querySize = querySnapShot.size;
+                        let count = 0;
                         querySnapShot.forEach((doc) => {
                             const feedData = doc.data();
                             let feedObject = {};
@@ -84,15 +86,21 @@ export default {
                             } else {
                                 feedObject.shortDescription = feedObject.description;
                             }
-                            tempFeeds.push(feedObject);
-                            
+                            this.feeds.push(feedObject);
+
+                            // For callback
+                            count = count + 1;
+                            if (querySize == count) {
+                                this.callback();
+                            }
                         });
-                    }).then(() => {
-                        // Sort array according to date
-                        this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
-                    });
+                    })
                 });
             })
+        },
+        callback: function() {
+            // Sort array according to date
+            this.feeds = this.feeds.sort((a,b)=>b.date - a.date);
         },
         popup: function(index) {
             var modal = document.getElementById("myModal");
