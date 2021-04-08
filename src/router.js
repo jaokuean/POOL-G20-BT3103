@@ -8,6 +8,7 @@ import Landing from '@/components/Landing';
 import ActivityFeed from '@/components/ActivityFeed';
 import AboutUs from '@/components/AboutUs';
 import ContactUs from '@/components/ContactUs';
+import Explore from '@/components/Explore';
 import PendingPools from '@/components/PendingPools';
 import SetPassword from '@/components/SetPassword';
 import SearchPoolPage from '@/components/SearchPoolPage';
@@ -20,7 +21,7 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            redirect: '/landing'
+            redirect: '/explore'
         },
         {
             path: '/login',
@@ -70,6 +71,14 @@ const router = new Router({
             }
         },
         {
+            path: '/explore',
+            name: 'Explore',
+            component: Explore,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
             path: '/pending-pools',
             name: 'PendingPools',
             component: PendingPools,
@@ -84,7 +93,7 @@ const router = new Router({
         },
         {
             path: '/search-service',
-            name:'SearchService',
+            name: 'SearchService',
             component: SearchPoolPage,
             meta: {
                 requiresAuth: true
@@ -92,8 +101,8 @@ const router = new Router({
         },
         {
             path: '/pool-groups',
-            name:'PoolGroups',
-            component: PoolGroupsPage, 
+            name: 'PoolGroups',
+            component: PoolGroupsPage,
             props: true,
             meta: {
                 requiresAuth: true

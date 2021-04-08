@@ -238,11 +238,7 @@ p a {
   font-size: 1.3em;
   margin: 5px;
 }
-#googelbtntxt {
-  display: table-cell;
-  vertical-align: middle;
-  margin: auto;
-}
+
 .submitBtn {
   width: 50%;
   display: inline-block;
