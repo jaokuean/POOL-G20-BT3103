@@ -1,13 +1,8 @@
 <template>
   <div class="login">
-    <img
-      alt="pool logo"
-      src="../assets/pool-logo-name.png"
-      style="width: 30%; max-height: 30vh"
-    />
-    <h3>Manage your subs, POOL your resources</h3>
+    <img id="poolLogo" alt="pool logo" src="../assets/pool-logo-name.png" />
+    <h4>Manage your subs, POOL your resources</h4>
     <div id="loginBox">
-      <h3>LOGIN or REGISTER</h3>
       <input
         class="loginFields"
         type="text"
@@ -20,14 +15,12 @@
         v-model="password"
         placeholder="Password"
       /><br />
-
       <input type="checkbox" id="checkbox" @click="remember_me" />
-      <span style="color: white">Remember Me</span><br />
-      <button @click="login">Login</button>
-      <p id="divider" style="width: 220px; margin: auto">
+      <span id="rememberMe">Remember Me</span><br />
+      <button @click="login"><span>Login</span></button>
+      <p id="divider" style="">
         <span id="textDivider">or sign in with</span>
       </p>
-
       <google-login></google-login>
     </div>
 
@@ -62,17 +55,12 @@ export default {
 
 <style scoped>
 /* "scoped" attribute limit the CSS to this component only */
+#poolLogo {
+  width: 28%;
+}
 .login {
   margin-top: 40px;
-}
-#loginBox h3 {
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  padding: 0px 0px 5px 25px;
-  border-bottom: 1px solid #ebe6e2;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
-  text-align: left;
+  text-align: center;
 }
 .loginFields {
   margin: 0 auto;
@@ -90,7 +78,7 @@ export default {
   /* Size and position */
   width: 340px;
   margin: 30px auto 30px;
-  padding: 5px;
+  padding: 38px 5px 30px 5px;
   position: relative;
 
   /* Styles */
@@ -120,10 +108,14 @@ p a {
   flex-direction: column;
   align-items: center;
 }
-
+#rememberMe {
+  color: white;
+}
 #divider {
   display: flex;
   flex-direction: row;
+  width: 220px;
+  margin: 5px auto 0 auto;
 }
 #divider::before,
 #divider::after {
@@ -138,25 +130,43 @@ p a {
   font-size: 1.3em;
   margin: 5px;
 }
-#googelbtntxt {
-  display: table-cell;
-  vertical-align: middle;
-  margin: auto;
-}
+
 button {
-  width: 50%;
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #000;
-  background-color: #f4f5f5;
+  border-radius: 3px;
+  background-color: white;
   border: none;
-  border-radius: 4px;
-  box-shadow: 0 1px #c5c5c5;
-  margin: 8px 0;
+  text-align: center;
+  padding: 15px 60px 15px 60px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 15px 0px 5px 0px;
+  text-transform: uppercase;
+}
+
+button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: black;
+}
+
+button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button:hover span {
+  padding-right: 25px;
+  font-weight: bold;
+}
+
+button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 </style>
