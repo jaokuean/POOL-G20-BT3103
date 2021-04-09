@@ -16,10 +16,10 @@
             <ul>
                 <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)">
                     <img v-bind:src="pool.logo"/>
-                    <p id='poolDescription'>{{pool.poolName}}</p>
+                    <p id='poolName'>{{pool.poolName}}</p>
                 </li>
             </ul>
-            <div id='addSubContainer'>
+            <div id='addSubContainer' title='Explore now!' @click="explore">
                 <a id='addIcon'>+</a>
                 Add a subscription
             </div>
@@ -87,6 +87,9 @@ export default {
                 this.$emit('dbclicked', pool);
                 this.clicks = 0;
             }
+        },
+        explore: function() {
+            this.$router.push('/explore');
         }
     },
     created() {
@@ -148,14 +151,15 @@ li {
     border-radius: 50%;
 }
 
-#poolDescription {
-    width: 6em;
+#poolName {
     margin-top: 5px;
-    text-align: start;
+    text-align: center;
 }
+
 #addSubContainer {
     display: table-cell;
     vertical-align: middle;
+    cursor: pointer;
 }
 #addIcon {
     background: #69BBE9;
@@ -164,7 +168,7 @@ li {
     width: 2em; 
     height: 2em;
     border-radius: 50%;
-    display: inline-flex; /* or inline-flex */
+    display: inline-flex; 
     align-items: center; 
     justify-content: center;
     margin-left: 4rem;
