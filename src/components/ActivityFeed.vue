@@ -13,7 +13,7 @@
                         <img v-bind:src='feed.imgURL'/>
                     </div>
                     <div style="width:80%;">
-                        {{feed.shortDescription}}
+                        {{feed.shortContent}}
                     </div>
                 </span>
             </li>
@@ -41,8 +41,10 @@ export default {
     data: function() {
         return {
             feeds:[],
-            popupTitle:"Title",
-            popupContent:"Some content",
+            feedsID: new Set(),
+            popupTitle:"",
+            popupContent:"",
+            create:false,
         }
     },
     methods: {
@@ -51,26 +53,33 @@ export default {
             const uid = this.$store.getters.user.data.uid;
             const poolgroups_ref = database.firestore().collection('poolgroups');
             const activities_ref = database.firestore().collection('activities')
-            let tempFeeds = [];
             //Gets pools of user
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
                 querySnapShot.forEach((doc)=> {
                     // Get the activity feeds using poolID
-                    activities_ref.where("pool","==",doc.data().poolID).get().then((querySnapShot) => {
+                    activities_ref.where("pool","==",doc.data().poolID).onSnapshot((querySnapShot) => {
+                        let querySize = querySnapShot.size;
+                        let count = 0;
                         querySnapShot.forEach((doc) => {
-                            const feedData = doc.data();
-                            let feedObject = {};
-                            feedObject['title'] = feedData.title;
-                            feedObject['description'] = feedData.content;
-                            feedObject['date'] = feedData.dateCreated.toDate();
+                            let feedData = doc.data();
+                            feedData['date'] = feedData.dateCreated.toDate();
+                            console.log(doc.id); // Debugging
                             // Getting image of the service involved
                             database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
                                 if (docSnapShot.exists) {
                                     database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
                                         if (docSnapShot.exists) {
-                                            feedObject['imgURL'] = docSnapShot.data().logo;
+                                            feedData['imgURL'] = docSnapShot.data().logo;
+                                            // For callback
+                                            if (querySize == count) {
+                                                this.callback();
+                                            }
                                         } else {
                                             console.log("Services for this activity does not exist");
+                                            // For callback
+                                            if (querySize == count) {
+                                                this.callback();
+                                            }
                                         }
                                     }) 
                                 } else {
@@ -79,20 +88,29 @@ export default {
                             })
 
                             // Create short message
-                            if (feedObject.description.length > 76) {
-                                feedObject.shortDescription = feedObject.description.slice(0,76) + '...';
+                            if (feedData.content.length > 76) {
+                                feedData.shortContent = feedData.content.slice(0,76) + '...';
                             } else {
-                                feedObject.shortDescription = feedObject.description;
+                                feedData.shortContent = feedData.content;
                             }
-                            tempFeeds.push(feedObject);
                             
+                            // Check if feeds already exists
+                            if (!this.feedsID.has(doc.id)) {
+                                // Feed does not exist, add to feeds
+                                this.feeds.push(feedData);
+                                this.feedsID.add(doc.id);
+                            }
+
+                            // For callback
+                            count = count + 1;
                         });
-                    }).then(() => {
-                        // Sort array according to date
-                        this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
-                    });
+                    })
                 });
             })
+        },
+        callback: function() {
+            // Sort array according to date
+            this.feeds = this.feeds.sort((a,b)=>b.date - a.date);
         },
         popup: function(index) {
             var modal = document.getElementById("myModal");
@@ -101,7 +119,7 @@ export default {
 
             //Set title and content
             this.popupTitle = feed.title;
-            this.popupContent = feed.description;
+            this.popupContent = feed.content;
 
             // Display popup box
             modal.style.display = "block";

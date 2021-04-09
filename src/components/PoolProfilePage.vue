@@ -79,24 +79,27 @@ export default {
                 })
             }).then(() => {
                 // Getting feeds
-                let tempFeeds = [];
-                activities_ref.where("pool","==",this.pool.poolID).get().then((querySnapShot) => {
+                activities_ref.where("pool","==",this.pool.poolID).onSnapshot((querySnapShot) => {
+                    this.feeds = [];
+                    let querySize = querySnapShot.size;
+                    let count = 0;
                     querySnapShot.forEach((doc) => {
                         let feed = doc.data();
                         feed['date'] = feed.dateCreated.toDate();
-                        let filtered = this.members.filter((member) => {
-                            return member.userID == feed.user;
-                        })
-                        if (feed['title'] == "Message") {
-                            feed['title'] = 'Message from ' + filtered[0].name;
+                        this.feeds.push(feed);
+
+                        // For callback
+                        count = count + 1;
+                        if (querySize == count) {
+                            this.callback();
                         }
-                        tempFeeds.push(feed);
                     });
-                }).then(() => {
-                    // Sort array according to date
-                    this.feeds = tempFeeds.sort((a,b)=>b.date - a.date);
-                });
+                })
             })
+        },
+        callback: function() {
+            // Sort array according to date
+            this.feeds = this.feeds.sort((a,b)=>b.date - a.date);
         },
         popup: function() {
             // Get the modal
@@ -127,7 +130,7 @@ export default {
             // Create feed object for message and write to database
             let feed = {};
             feed['content'] = msg;
-            feed['title'] = 'Message';
+            feed['title'] = 'Message from '+ this.$store.getters.user.data.displayName;
             feed['user'] = this.$store.getters.user.data.uid;
             feed['pool'] = this.pool.poolID;
             feed['dateCreated'] = database.firestore.Timestamp.fromDate(new Date());
@@ -136,10 +139,9 @@ export default {
             });
 
             // Add to current feeds so there is no lag on display
-            feed['title'] = 'Message from '+ this.$store.getters.user.data.displayName;
-            feed['date'] = feed.dateCreated.toDate();
-            this.feeds.push(feed);
-            this.feeds=this.feeds.sort((a,b)=>b.date - a.date);
+            // feed['date'] = feed.dateCreated.toDate();
+            // this.feeds.push(feed);
+            // this.feeds=this.feeds.sort((a,b)=>b.date - a.date);
 
             // Close modal
             var modal = document.getElementById("myModalForm");

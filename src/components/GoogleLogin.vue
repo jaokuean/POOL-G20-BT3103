@@ -1,12 +1,7 @@
 <template>
   <div class="container">
     <button @click="socialLogin" class="googlebtn">
-      <img
-        alt="Google Logo"
-        src="../assets/google-logo.png"
-        width="24px"
-        height="24px"
-      />
+      <img alt="Google Logo" src="../assets/google-logo.png" />
       <span class="googelbtntxt">Google</span>
     </button>
   </div>
@@ -113,20 +108,48 @@ export default {
   vertical-align: middle;
   margin: auto;
 }
+button img {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  margin: 0 10px 0 0;
+}
 button {
-  width: 50%;
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #000;
-  background-color: #f4f5f5;
+  border-radius: 3px;
+  background-color: white;
   border: none;
-  border-radius: 4px;
-  box-shadow: 0 1px #c5c5c5;
-  margin: 8px 0;
+  text-align: center;
+  padding: 15px 40px 15px 40px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 15px 0px 5px 0px;
+  text-transform: uppercase;
+}
+
+button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: black;
+}
+
+button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button:hover span {
+  padding-right: 25px;
+  font-weight: bold;
+}
+
+button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 </style>

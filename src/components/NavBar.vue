@@ -5,7 +5,7 @@
         <img alt="pool logo" src="../assets/pool-logo.png" class="logo" />
         <ul>
           <li>
-            <router-link to="home">Home</router-link>
+            <router-link to="home">Dashboard</router-link>
           </li>
           <li>
             <router-link to="about-us">About Us</router-link>
@@ -13,7 +13,17 @@
           <li>
             <router-link to="contact-us">Contact Us</router-link>
           </li>
-          <span style="margin: 10px 50px 0 50px">
+          <li>
+            <router-link to="explore">Explore</router-link>
+          </li>
+          <router-link to="explore"
+            ><img
+              id="avatarImg"
+              alt="photoURL"
+              v-bind:src="user.data.photoUrl"
+              class="logo"
+          /></router-link>
+          <span id="welcomeUser">
             Welcome,<br />
             {{ user.data.displayName }}
           </span>
@@ -27,7 +37,7 @@
         <ul>
           <img alt="pool logo" src="../assets/pool-logo.png" class="logo" />
           <li>
-            <router-link to="home">Home</router-link>
+            <router-link to="explore">Explore</router-link>
           </li>
           <li>
             <router-link to="about-us">About Us</router-link>
@@ -35,9 +45,9 @@
           <li>
             <router-link to="contact-us">Contact Us</router-link>
           </li>
-          <li id="loginBtn">
-            <router-link to="login">Login</router-link>
-          </li>
+
+          <button @click="goLogin" id="loginBtn"><span>Login</span></button>
+          <span id="line">|</span>
           <button @click="goRegister"><span>Register</span></button>
         </ul>
       </nav>
@@ -49,9 +59,7 @@ import { mapGetters } from "vuex";
 import firebase from "firebase";
 export default {
   data() {
-    return {
-      userDetails: this.$store.getters.user,
-    };
+    return {};
   },
   components: {},
   computed: {
@@ -74,6 +82,9 @@ export default {
     goRegister() {
       this.$router.push("sign-up");
     },
+    goLogin() {
+      this.$router.push("login");
+    },
   },
 };
 </script>
@@ -81,7 +92,7 @@ export default {
 <style scoped>
 nav {
   width: 100%;
-  height: 70px;
+  height: 61px;
   background: rgb(244, 245, 245);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -93,7 +104,6 @@ nav ul {
   display: flex;
   margin: 0;
   float: left;
-  height: 70px;
 }
 nav ul li {
   list-style: none;
@@ -101,23 +111,32 @@ nav ul li {
 }
 nav ul li:hover {
   background-color: #69bbe9;
+  border-radius: 2px;
+}
+nav ul li a:hover {
+  color: azure;
+  font-weight: bold;
 }
 nav ul li a {
   display: block;
   color: black;
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 105px;
+  text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  font-weight: bold;
-  line-height: 75px;
+  line-height: 60px;
 }
-.logo {
-  max-width: 60%;
-  max-height: 8vh;
-  margin-left: 50px;
-  margin-right: 50px;
+nav img {
+  height: 60px;
+  width: 60px;
+  margin: 0px 100px 0 40px;
   float: left;
+}
+#welcomeUser {
+  position: relative;
+  margin: 11px 50px 0 10px;
 }
 button {
   border-radius: 3px;
@@ -129,7 +148,6 @@ button {
   transition: all 0.5s;
   cursor: pointer;
   margin: 5px;
-  font-weight: bold;
   text-transform: uppercase;
 }
 
@@ -138,6 +156,8 @@ button span {
   display: inline-block;
   position: relative;
   transition: 0.5s;
+  color: azure;
+  font-weight: bold;
 }
 
 button span:after {
@@ -156,5 +176,23 @@ button:hover span {
 button:hover span:after {
   opacity: 1;
   right: 0;
+}
+#line {
+  position: relative;
+  margin: 11px 5px 0 5px;
+  font-size: 1.8em;
+}
+#avatarImg {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 0;
+  margin: 5px 0 5px 10px;
+  border: 1px solid lightslategray;
+}
+#avatarImg:hover {
+  border: 1px solid whitesmoke;
+  opacity: 0.9;
 }
 </style>
