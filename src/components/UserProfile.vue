@@ -64,7 +64,7 @@ export default {
     },
     methods: {
         fetchData: function() {
-            const uid = "1LZ4ZCiJOUN3ueGg6JL4jN4uU5y2" //this.$store.getters.user.data.uid;
+            const uid = this.$store.getters.user.data.uid;
             const userRef = database.firestore().collection('users')
             const cardRef = database.firestore().collection('creditcards')
             const poolgroupsRef = database.firestore().collection('poolgroups')
@@ -99,7 +99,7 @@ export default {
 
         updateCreditCard : function() {
             const cardRef = database.firestore().collection('creditcards')
-            const uid = "1LZ4ZCiJOUN3ueGg6JL4jN4uU5y2" //this.$store.getters.user.data.uid;
+            const uid = this.$store.getters.user.data.uid;
             cardRef.where("userID", "==", uid).get().then(querySnapShot=>{
                 if (querySnapShot.empty) {
                     cardRef.add({

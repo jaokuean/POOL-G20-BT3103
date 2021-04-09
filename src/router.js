@@ -13,6 +13,7 @@ import PendingPools from '@/components/PendingPools';
 import SetPassword from '@/components/SetPassword';
 import SearchPoolPage from '@/components/SearchPoolPage';
 import PoolGroupsPage from '@/components/PoolGroupsPage';
+import UserProfle from '@/components/UserProfile';
 
 Vue.use(Router);
 
@@ -107,6 +108,12 @@ const router = new Router({
             meta: {
                 requiresAuth: true
             }
+        },
+        {
+            path: '/user-profile',
+            name: UserProfle,
+            component: UserProfle,
+            props: true,
         }
     ]
 });
