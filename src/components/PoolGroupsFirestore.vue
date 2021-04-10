@@ -201,13 +201,15 @@ export default {
       items.remaining = items.remaining - 1;
       database.firestore().collection("pools").doc(document_id).update(items);
       let userpool = {}
-      //startDate
+
       //let dateCreated = items.dateCreated
       //userpool["startDate"] = dateCreated
       //userpool["endDate"] = dateCreated
       //userpool["nextPaymentDue"] = new Date(dateCreated.toDate().setMonth(dateCreated.toDate().getMonth()+1))
 
+      //when join the group
       userpool["startDate"] = database.firestore.FieldValue.serverTimestamp();
+      //endDate should be empty?
       userpool["endDate"] = database.firestore.FieldValue.serverTimestamp();
       userpool["nextPaymentDue"] = new Date(userpool.startDate.toDate().setMonth(userpool.startDate.toDate().getMonth()+1));
       let poolID = database.firestore().collection("pools").doc(document_id).get().id;
