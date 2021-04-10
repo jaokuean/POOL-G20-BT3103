@@ -200,9 +200,23 @@ export default {
         .data();
       items.remaining = items.remaining - 1;
       database.firestore().collection("pools").doc(document_id).update(items);
-      alert(
+      let userpool = {}
+      //startDate
+      //let dateCreated = items.dateCreated
+      //userpool["startDate"] = dateCreated
+      //userpool["endDate"] = dateCreated
+      //userpool["nextPaymentDue"] = new Date(dateCreated.toDate().setMonth(dateCreated.toDate().getMonth()+1))
+
+      userpool["startDate"] = database.firestore.FieldValue.serverTimestamp();
+      userpool["endDate"] = database.firestore.FieldValue.serverTimestamp();
+      userpool["nextPaymentDue"] = new Date(userpool.startDate.toDate().setMonth(userpool.startDate.toDate().getMonth()+1));
+      let poolID = database.firestore().collection("pools").doc(document_id).get().id;
+      userpool["poolID"] = poolID;
+      const uid = this.$store.getters.user.data.uid;
+      userpool["userID"] = uid;
+      database.firestore().collection("poolgroups").add(userpool).then(alert(
         "Congratulations! You've successfully joined this group!\n Your pool name is " + items.poolName + 
-        "\nThere are " + items.remaining + "positions left in the group."
+        "\nThere are " + items.remaining + "positions left in the group.")
       );
     },
 
