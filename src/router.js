@@ -14,6 +14,7 @@ import SetPassword from '@/components/SetPassword';
 import SearchPoolPage from '@/components/SearchPoolPage';
 import PoolGroupsPage from '@/components/PoolGroupsPage';
 import UserProfle from '@/components/UserProfile';
+import CreateSubscription from '@/components/CreateSubscription';
 
 Vue.use(Router);
 
@@ -114,6 +115,15 @@ const router = new Router({
             name: UserProfle,
             component: UserProfle,
             props: true,
+        },
+        {
+            path: '/create-subscription',
+            name: 'CreateSubscription',
+            component: CreateSubscription,
+            props: true,
+            meta: {
+                requiresAuth: true
+            }
         }
     ]
 });
