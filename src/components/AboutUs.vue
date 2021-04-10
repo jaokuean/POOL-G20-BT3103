@@ -1,19 +1,32 @@
 <template>
   <div class="container">
     <navbar></navbar>
-    <p id="header">About Us</p>
+      <p id="header"></p>
+      <img alt="pool logo" src="../assets/pool-logo.png" class="logo" id="logo" />
+    <div id='blurb'>
+      <p>Subscriptions are everywhere today. We want to help you manage them</p>
+      <p>Pooled subscriptions help you save time and money, allowing you to subscribe to more! </p>
+      <p>Pool streamlines the process of finding, sharing and managing your subscriptions, all on one platform! </p>
+      <p> Using Pool, you can manage all your payments, account details and shared subscription all on our site </p>
+    </div>
     <div id="content">
-    <p id="starter">
-      Thank you for being with us! Here's a short introduction about what we can provide you with!
-    </p>
-    <br>
-    <p id="para1">
-      We provide a web platform that serves as a dashboard to help individuals manage their subscriptions and monthly payments: Pool. Users will pay Pool, and Pool will pay their services. This way, users can keep track of outflows on a consolidated portal.
-    </p>
-    <br>
-    <p id="para2">
-      Also, Pool will provide a matching service for users who want to find others who are interested in sharing a group subscription. 
-    </p>
+      <div class="card">
+        <p class="card_head"> Subscribe With Friends </p>
+        <p class ="card_content"> You can create pools for yourself and your friends and family. No more awkwardly scrolling through group 
+        messages or late night texts to look for account login details </p>
+      </div>
+      <div class="card">
+        <p class="card_head"> Save On Subscriptions </p>
+        <p class ="card_content"> The more the merrier! Split the cost with others so you don't need to pay as much! </p>
+      </div>
+      <div class="card">
+        <p class="card_head"> Track your spending </p>
+        <p class="card_content"> Never forget how much you are spending, and what you are spending on. No need to dig through account statements to 
+        find what you are paying for! </p>
+      </div>
+    </div>
+    <div id="contact">
+      <button onclick="location.href='mailto:bt3103.g20@gmail.com';"><span>Email Us</span></button>
     </div>
   </div>
 </template>
@@ -31,30 +44,99 @@ export default {
   font-size: 35px;
 }
 
-#starter {
-  font-size: 25px;
-  width: 70%;
-  text-align: center;
-  padding-left: 180px;
-  padding-top: 30px;
-}
-
-#para1 {
-  font-size: 25px;
-  width: 70%;
-  text-align: center;
-  padding-left: 180px;
-}
-
-#para2 {
-  font-size: 25px;
-  width: 70%;
-  text-align: center;
-  padding-left: 180px;
-}
 
 #content {
-  background-color:#b0dffa;
-  height: 500px;
+  height: 350px;
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  color: white;
+  
+}
+
+.card {
+  width: 90%;
+  margin: auto;
+  text-align: center;
+  padding:0.5em;
+  background:#69BBE9;
+  border-radius: 20px;
+  margin: 20px;
+}
+
+#logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
+  
+}
+
+button {
+  border-radius: 15px;
+  background-color: #69bbe9;
+  border: none;
+  color: black;
+  padding: 20px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: azure;
+  font-weight: bold;
+}
+
+button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button:hover span {
+  padding-right: 25px;
+}
+
+button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+#contact {
+  justify-content: center;
+  text-align: center;
+}
+
+#blurb {
+  justify-content: center;
+  text-align: center;
+  color: white;
+  background:#69BBE9;
+  border-radius: 20px;
+  padding: 20px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+#blurb > p {
+  font-size: 20px;
+}
+
+.card_head {
+  font-size: 35px;
+}
+
+.card_content {
+  font-size: 25px;
 }
 </style>
