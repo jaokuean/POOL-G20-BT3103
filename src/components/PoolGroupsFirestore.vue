@@ -200,30 +200,32 @@ export default {
         .data();
       items.remaining = items.remaining - 1;
       database.firestore().collection("pools").doc(document_id).update(items);
-      alert(
-        "Congratulations! You've successfully joined this group! Your pool name is " +
-          items.poolName
+      let userpool = {}
+
+      //let dateCreated = items.dateCreated
+      //userpool["startDate"] = dateCreated
+      //userpool["endDate"] = dateCreated
+      //userpool["nextPaymentDue"] = new Date(dateCreated.toDate().setMonth(dateCreated.toDate().getMonth()+1))
+
+      //when join the group
+      userpool["startDate"] = database.firestore.FieldValue.serverTimestamp();
+      //endDate should be empty?
+      userpool["endDate"] = database.firestore.FieldValue.serverTimestamp();
+      userpool["nextPaymentDue"] = new Date(userpool.startDate.toDate().setMonth(userpool.startDate.toDate().getMonth()+1));
+      let poolID = database.firestore().collection("pools").doc(document_id).get().id;
+      userpool["poolID"] = poolID;
+      const uid = this.$store.getters.user.data.uid;
+      userpool["userID"] = uid;
+      database.firestore().collection("poolgroups").add(userpool).then(alert(
+        "Congratulations! You've successfully joined this group!\n Your pool name is " + items.poolName + 
+        "\nThere are " + items.remaining + "positions left in the group.")
       );
     },
 
     create: function () {
-      //successful!
-      let items = {};
-      items["dateCreated"] = database.firestore.FieldValue.serverTimestamp();
-      items["maxSize"] = Math.floor(Math.random() * 4 + 1);
-      items["poolName"] = Math.random().toString(16).substr(2, 8);
-      items["remaining"] = items["maxSize"] - 1;
-      items["serviceId"] = this.$route.params.document_id; //serviceID has not been populated yet!
-      items["sharedPassword"] = Math.random().toString(16).substr(2, 8);
-      items["sharedUserName"] =
-        Math.random().toString(16).substr(2, 8) + "@gmail.com";
-      console.log(items);
-      database.firestore().collection("pools").add(items); //.then(() => {location.reload()})
-      alert(
-        "You've successfully created a group! The pool's name is: " +
-          items.poolName +
-          ". Wait for others to join the pool!"
-      );
+      let doc_id = this.$route.params.document_id
+      alert("In PoolGroupsFirestore\n" + doc_id)
+      this.$router.push({name: 'CreateSubscription', params: { document_id: doc_id } })
     },
   },
   beforeCreate() {

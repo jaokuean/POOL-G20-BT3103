@@ -1,8 +1,8 @@
 <template>
    <div class="wrap">
         <div class="search">
-            <input type="text" class="searchTerm" placeholder="What are you looking for?">
-            <button type="submit" class="searchButton">
+            <input type="text" class="searchTerm" placeholder="What are you looking for?" v-model="poolName">
+            <button v-on:click="fetchData" class="searchButton">
                 <img class="searchImg" src='../assets/magnifying-glass.png'/>
             </button>
         </div>
@@ -10,8 +10,31 @@
 </template>
 
 <script>
+import database from '../firebase.js'
+
 export default {
-    
+    data: function() {
+        return {
+            poolName:'Netflix',
+            serviceID: "",
+            logo: "",
+            description:""
+        }
+    },
+    methods: {
+        fetchData: function() {
+            //click on button to start the search
+            //why the first time nothing comes out but second time it works?
+            database.firestore().collection("services").where("serviceName","==",this.poolName).get().then((d)=>{
+                this.serviceID = d.docs[0].id
+                this.logo = d.docs[0].data().logo
+                this.description = d.docs[0].data().serviceName + ": " + d.docs[0].data().description + "\n" + "fee: $" + d.docs[0].data().fee + "\n" + "website link: " + d.docs[0].data().website
+            })//.then(alert(this.description))
+        }
+    },
+    created() {
+        this.fetchData()
+    }
 }
 </script>
 
