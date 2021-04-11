@@ -4,10 +4,6 @@
             <navbar id = "navbar"></navbar>
         </nav>
         <div id = "container">
-            <div id = "left">
-                <activityFeed id = "activityFeed">
-                </activityFeed>
-            </div>
             <div id = "right">
                 <br>
                 <SearchPage id = "searchpage"></SearchPage>
@@ -17,13 +13,11 @@
 </template>
 
 <script>
-//import database from '../firebase.js'
-import activityFeed from './ActivityFeed.vue'
 import SearchPage from './SearchPage.vue'
 import navbar from "./NavBar";
 
 export default {
-    components: {activityFeed, navbar, SearchPage},
+    components: {navbar, SearchPage},
 
     data() {
     }

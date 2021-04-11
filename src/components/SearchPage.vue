@@ -3,6 +3,7 @@
         <div id='searchBox'>
             <img v-bind:src="search"/> <input type="text" id="poolName" v-model="poolName" v-on:keyup.enter="fetchData">
             <h3></h3>
+            <h3></h3>
         </div>
 
         <div id ='searchBar'>
@@ -61,7 +62,7 @@ export default {
 
 <style scoped>
 #mainComponent {
-    width: 60%;
+    width: 75%;
     font-family: Monaco, sans-serif;
 }
 
@@ -85,18 +86,24 @@ li {
     border-radius: 50%;
 }
 
+#result{
+    width: 750px;
+}
+
 #searchBox {
     padding-left: 50px;
+    width: 700px;
 }
 
 #searchBox img {
-    height: 1.2em;
-    width: 1.2em;
+    height: 2.2em;
+    width: 2.2em;
 }
 
 #searchBox input {
-    width: 350px;
-    height: 20px;
+    width: 500px;
+    height: 30px;
+    font-size: 20px;
     border-start-end-radius: 1rem;
     border-end-end-radius: 1rem;
     border-end-start-radius: 1rem;
@@ -108,8 +115,8 @@ li {
     border-start-end-radius: 1rem;
     border-end-end-radius: 1rem;
     padding-top: 0;
-    width: 500px;
-    font-size:30px;
+    width: 800px;
+    font-size:50px;
     padding-left: 50px;
     text-align: left;
 }
@@ -124,9 +131,15 @@ li {
     float:left;
 }
 
+#float1 img{
+    height: 10em;
+    width: 10em;
+}
+
 #float2 {
-    padding-left:200px;
-    padding-top:15px;
+    font-size:30px;
+    padding-left:230px;
+    padding-top: 12px;
     white-space: pre-line;
 }
 </style>

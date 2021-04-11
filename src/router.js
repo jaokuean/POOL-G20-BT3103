@@ -15,6 +15,7 @@ import SearchPoolPage from '@/components/SearchPoolPage';
 import PoolGroupsPage from '@/components/PoolGroupsPage';
 import UserProfle from '@/components/UserProfile';
 import Statistics from '@/components/Statistics';
+import CreateSubscription from '@/components/CreateSubscription';
 
 Vue.use(Router);
 
@@ -119,7 +120,16 @@ const router = new Router({
         {
             path: '/statistics',
             name: Statistics,
-            component: Statistics
+            component: Statistics,
+        },
+        {
+            path: '/create-subscription',
+            name: 'CreateSubscription',
+            component: CreateSubscription,
+            props: true,
+            meta: {
+                requiresAuth: true
+            }
         }
     ]
 });
