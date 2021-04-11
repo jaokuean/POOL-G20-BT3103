@@ -13,7 +13,7 @@
     <h3>Monthly Spendings</h3>
     <p id = "monthlyspendings" >${{spending}}</p>
     <p><button @click="toProfile">Edit Profile</button></p>
-    <p><button>View Statistics</button></p>
+    <p><button @click="toStatistics">View Statistics</button></p>
   </div>
 </template>
 
@@ -73,6 +73,9 @@ export default {
     },
     toProfile: function() {
       this.$router.push('/user-profile');
+    },
+    toStatistics: function() {
+      this.$router.push('/statistics');
     }
   },
   created() {
