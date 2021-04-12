@@ -2,7 +2,8 @@
     <div id='mainComponent'>
         <div id='pendingPoolsContainer'>
             <h2>Pending Pools</h2>
-            <p class="noPoolsMsg" v-show="pendingPools.length==0"><i>You have no pending pools</i></p>
+            <p class="msg" v-show="pendingPools.length==0 && !loading"><i>You have no pending pools</i></p>
+            <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <ul>
                 <li class='poolItem' v-for="pendingPool in pendingPools" :key="pendingPool.index">
                     <img v-bind:src="pendingPool.logo"/>
@@ -12,7 +13,8 @@
         </div>
         <div id ='myPoolsContainer'>
             <h2>My Pools</h2>
-            <p class="noPoolsMsg" v-show="myPools.length==0"><i>You have no pools, get started by adding a subscription!</i></p>
+            <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
+            <p class="msg" v-show="myPools.length==0 && !loading"><i>You have no pools, get started by adding a subscription!</i></p>
             <ul>
                 <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)">
                     <img v-bind:src="pool.logo"/>
@@ -39,6 +41,7 @@ export default {
             delay: 700,
             clicks: 0,
             timer: null,
+            loading:true,
         }
     },
     methods: {
@@ -47,8 +50,10 @@ export default {
             const poolgroups_ref = database.firestore().collection('poolgroups');
             const pools_ref = database.firestore().collection('pools');
             const services_ref = database.firestore().collection('services');
-            //Gets pools of user
+            //Gets poolgroups of user
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
+                const size = querySnapShot.size;
+                let count = 0;
                 querySnapShot.forEach((doc)=> {
                     // Gets the pool using poolID
                     const poolID = doc.data().poolID;
@@ -63,12 +68,17 @@ export default {
                             pool['serviceName'] = service.serviceName;
                             pool['serviceDescription'] = service.description;
                         }).then(()=> {
-                            // Checks whether it is a pending pool and puts into the correct basket
-                            if (pool.remaining == 0) {
-                                this.myPools.push(pool);
-                            } else {
+                            // Checks whether it is a pending pool
+                            if (pool.remaining != 0) {
                                 pool['fill'] = (pool.maxSize - pool.remaining).toString() + "/" + pool.maxSize.toString();
                                 this.pendingPools.push(pool);
+                            }
+                            this.myPools.push(pool);
+                            
+                            // For loading callback
+                            count = count + 1;
+                            if (count == size) {
+                                this.stopLoad();
                             }
                         })
                     })
@@ -90,6 +100,9 @@ export default {
         },
         explore: function() {
             this.$router.push('/explore');
+        },
+        stopLoad: function() {
+            this.loading = false;
         }
     },
     created() {
@@ -111,7 +124,7 @@ export default {
     color: white;
 }
 
-.noPoolsMsg {
+.msg {
     margin-left: 4rem;
     padding-bottom: 1em;
 }
