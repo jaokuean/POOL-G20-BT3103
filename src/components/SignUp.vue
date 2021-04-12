@@ -3,29 +3,8 @@
     <img id="poolLogo" alt="pool logo" src="../assets/pool-logo-name.png" />
     <h4>Manage your subs, POOL your resources</h4>
     <div id="loginBox">
-      <p>
-        <input
-          type="text"
-          v-model="email"
-          placeholder="Email"
-          class="loginFields"
-        /><br />
-        <input
-          type="password"
-          v-model="password"
-          placeholder="Password"
-          class="loginFields"
-        /><br />
-        <input
-          type="password"
-          v-model="confirmPassword"
-          placeholder="Confirm Password"
-          class="loginFields"
-        /><br />
-        <button @click="signUp"><span>Sign Up</span></button>
-      </p>
       <p id="divider">
-        <span id="textDivider">or sign up with</span>
+        <span id="textDivider"><i>Supported by Google</i></span>
       </p>
       <google-login></google-login>
       <br />

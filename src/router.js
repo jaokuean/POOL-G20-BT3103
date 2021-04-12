@@ -16,6 +16,7 @@ import PoolGroupsPage from '@/components/PoolGroupsPage';
 import UserProfle from '@/components/UserProfile';
 import Statistics from '@/components/Statistics';
 import CreateSubscription from '@/components/CreateSubscription';
+import Logout from '@/components/Logout';
 
 Vue.use(Router);
 
@@ -130,7 +131,12 @@ const router = new Router({
             meta: {
                 requiresAuth: true
             }
-        }
+        }, {
+            path: '/logout',
+            name: Logout,
+            component: Logout,
+        },
+
     ]
 });
 

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="container">
     <template v-if="user.loggedIn">
       <nav>
         <img alt="pool logo" src="../assets/pool-logo.png" class="logo" />
@@ -13,7 +13,7 @@
           <li>
             <router-link to="explore">Explore</router-link>
           </li>
-          <router-link to="explore"
+          <router-link to="user-profile"
             ><img
               id="avatarImg"
               alt="photoURL"
@@ -31,8 +31,8 @@
     </template>
     <template v-else>
       <nav>
+        <img alt="pool logo" src="../assets/pool-logo.png" class="logo" />
         <ul>
-          <img alt="pool logo" src="../assets/pool-logo.png" class="logo" />
           <li>
             <router-link to="explore">Explore</router-link>
           </li>
@@ -42,10 +42,9 @@
           <li>
             <router-link to="contact-us">Contact Us</router-link>
           </li>
-
-          <button @click="goLogin" id="loginBtn"><span>Login</span></button>
-          <span id="line">|</span>
-          <button @click="goRegister"><span>Register</span></button>
+          <button @click="goLogin" id="loginBtn">
+            <span>Get Started</span>
+          </button>
         </ul>
       </nav>
     </template>
@@ -71,13 +70,11 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$router.replace({
-            name: "Landing",
-          });
+          this.$router.push("logout");
+        })
+        .catch((error) => {
+          console.log("Logout error: " + error);
         });
-    },
-    goRegister() {
-      this.$router.push("sign-up");
     },
     goLogin() {
       this.$router.push("login");
@@ -87,19 +84,29 @@ export default {
 </script>
 
 <style scoped>
+#container {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
 nav {
   width: 100%;
-  height: 61px;
+  height: 75px;
   background: rgb(244, 245, 245);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  position: sticky;
-  top: 0px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  position: relative;
+  -webkit-animation: 0.95s ease-in-out 0s normal none 1 running fadeInDown;
+  animation: 0.95s ease-in-out 0s normal none 1 running fadeInDown;
+  -webkit-transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  -webkit-box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.1);
 }
 nav ul {
   display: flex;
-  margin: 0;
+  margin: 4px 0 0 100px;
   float: left;
 }
 nav ul li {
@@ -123,17 +130,18 @@ nav ul li a {
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  line-height: 60px;
+  line-height: 65px;
+  margin: 5px 0 0 0;
 }
-nav img {
-  height: 60px;
-  width: 60px;
-  margin: 0px 100px 0 40px;
+.logo {
+  height: 75px;
+  width: 75px;
   float: left;
+  margin-left: 20px;
 }
 #welcomeUser {
   position: relative;
-  margin: 11px 50px 0 10px;
+  margin: 18px 5px 0 15px;
 }
 button {
   border-radius: 3px;
@@ -144,7 +152,7 @@ button {
   padding: 20px;
   transition: all 0.5s;
   cursor: pointer;
-  margin: 5px;
+  margin: 5px 5px 5px 45px;
   text-transform: uppercase;
 }
 
@@ -185,7 +193,7 @@ button:hover span:after {
   height: 50px;
   border-radius: 50%;
   padding: 0;
-  margin: 5px 0 5px 10px;
+  margin: 10px 0 5px 5px;
   border: 1px solid lightslategray;
 }
 #avatarImg:hover {

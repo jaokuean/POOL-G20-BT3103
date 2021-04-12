@@ -1,33 +1,202 @@
 <template>
   <div class="container">
     <navbar></navbar>
-    <template v-if="user.loggedIn">
-      <div id="content">
-        <p id="starter">login home</p>
-      </div>
-    </template>
-    <template v-else>
-      <div id="content">
-        <p id="starter">not logged in home</p>
-      </div>
-    </template>
+    <div id="header">
+      <img
+        alt="pool logo"
+        src="../assets/pool-logo-name.png"
+        class="logo"
+        style="width: 30%; margin-top: 100px"
+      />
+      <h5>Manage your subs, POOL your resources</h5>
+      <searchbar style="margin: 0 auto"></searchbar>
+    </div>
 
-    <p id="header">Explore Page</p>
-    <p>rest of da shyt</p>
+    <div class="content" v-if="showTopSubs">
+      <div class="sectionHeader">
+        <h1 class="sectionh1">Trending Pools</h1>
+      </div>
+
+      <div
+        id="topSubList"
+        v-for="serv in sortByScore(services).slice(0, 5)"
+        :key="serv"
+      >
+        <ul>
+          <li @click="goToPool">
+            <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
+            <span>
+              <p class="serviceNames">{{ serv.name }}</p>
+              <p class="servicePoolsCount">{{ serv.score }} Pools</p>
+              <span class="tooltiptext">Join Pool</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <button v-on:click="showTopSubs = !showTopSubs" class="contentFooter">
+        <span> Click here to view more </span>
+      </button>
+    </div>
+
+    <div class="content" v-else>
+      <div class="sectionHeader">
+        <h1 class="sectionh1">Trending Pools</h1>
+      </div>
+      <div id="chart">
+        <top-subs-bar-chart></top-subs-bar-chart>
+      </div>
+      <button v-on:click="showTopSubs = !showTopSubs" class="contentFooter">
+        <span> Click here to view more </span>
+      </button>
+    </div>
+
+    <div class="content" v-if="showTopSearch">
+      <div class="sectionHeader">
+        <h1 class="sectionh1alt">Trending Searches</h1>
+      </div>
+
+      <div
+        id="topSubListalt"
+        v-for="serv in sortByScore(services).slice(0, 5)"
+        :key="serv"
+      >
+        <ul>
+          <li>
+            <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
+            <span class="altSpan">
+              <p class="serviceNames">{{ serv.name }}</p>
+              <p class="servicePoolsCount">{{ serv.score }} Pools</p>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <button v-on:click="showTopSearch = !showTopSearch" class="contentFooter">
+        <span> Click here to view more </span>
+      </button>
+    </div>
+    <div class="content" v-else>
+      <div class="sectionHeader">
+        <h1 class="sectionh1alt">Trending Searches</h1>
+      </div>
+
+      <button @click="showTopSearch = !showTopSearch" class="contentFooter">
+        <span> Click here to view more </span>
+      </button>
+    </div>
   </div>
 </template>
+
 <script>
+import database from "../firebase";
+import firebase from "firebase";
 import navbar from "./NavBar";
 import { mapGetters } from "vuex";
+import Searchbar from "./Searchbar.vue";
+import TopSubsBarChart from "./charts/TopSubsBarChart.js";
+
 export default {
   components: {
     navbar,
+    Searchbar,
+    TopSubsBarChart,
   },
   computed: {
     ...mapGetters({
       // map `this.user` to `this.$store.getters.user`
       user: "user",
     }),
+  },
+  data: function () {
+    return {
+      services: [],
+      pools: [],
+      showTopSubs: true,
+      showTopSearch: true,
+    };
+  },
+  created() {
+    this.fetchData();
+    this.tabulateTrends();
+  },
+  methods: {
+    goToPool: function () {
+      if (this.user.loggedIn) {
+        console.log("User is login.");
+        this.$router.push("search-service");
+      } else {
+        console.log("User not logged in.");
+        this.$router.push("login");
+      }
+    },
+    fetchData: function () {
+      this.fetchServices();
+      this.fetchPools();
+    },
+    fetchPools: async function () {
+      const poolRef = await database.firestore().collection("pools");
+      poolRef.get().then((querySnapShot) => {
+        querySnapShot.forEach((doc) => {
+          this.pools.push({
+            id: doc.id,
+            numUsers: doc.data().maxSize - doc.data().remaining,
+            sid: doc.data().serviceId,
+          });
+          //console.log(this.pools);
+        });
+      });
+    },
+    fetchServices: async function () {
+      const serviceRef = await database
+        .firestore()
+        .collection("services")
+        .orderBy("score", "desc");
+
+      serviceRef.get().then((querySnapShot) => {
+        querySnapShot.forEach(async (doc) => {
+          this.services.push({
+            id: doc.id,
+            name: doc.data().serviceName,
+            score: doc.data().score,
+            logo: doc.data().logo,
+          });
+        });
+      });
+    },
+
+    tabulateTrends: async function () {
+      const pools_ref = database.firestore().collection("pools");
+      const services_ref = database.firestore().collection("services");
+
+      pools_ref.get().then((poolSnap) => {
+        poolSnap.forEach(async (pool) => {
+          if (pool.exists) {
+            const poolObj = pool.data();
+            var toAdd = pool.data().maxSize - pool.data().remaining;
+            console.log(toAdd);
+            services_ref
+              .doc(poolObj.serviceId)
+              .update({
+                score: firebase.firestore.FieldValue.increment(toAdd),
+              })
+              .then(() => {
+                console.log("Document successfully updated!");
+              })
+              .catch((error) => {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+              });
+          }
+        });
+      });
+    },
+    sortByScore: function (arr) {
+      // Set slice() to avoid to generate an infinite loop!
+      return arr.slice().sort(function (a, b) {
+        return b.score - a.score;
+      });
+    },
   },
 };
 </script>
@@ -37,30 +206,144 @@ export default {
   font-size: 35px;
 }
 
-#starter {
-  font-size: 25px;
-  width: 70%;
-  text-align: center;
-  padding-left: 180px;
-  padding-top: 30px;
+.content {
+  position: relative;
+  margin-top: 60px;
+  background-color: #69bbe9;
+  height: 680px;
+}
+.container > div:nth-child(even) {
+  background: #fff;
+}
+.contentImg {
+  margin: 5px 20px 5px 5px;
+  height: 50px;
+  width: 50px;
+}
+#logoImg {
+  height: 9.5em;
+  width: 9.5em;
+  display: block;
+  border-radius: 10%;
+  margin-left: 20px;
+  filter: drop-shadow(5px 5px 5px #222);
+}
+#topSubList {
+  margin: 50px 10px 10px 10px;
+  border: 4px solid #69bbe9;
+}
+#topSubListalt {
+  margin: 50px 10px 10px 10px;
+  border: 4px solid #fff;
+}
+.sectionHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.serviceNames {
+  font-weight: bold;
+  margin: 0;
+}
+.servicePoolsCount {
+  margin: 0;
+  font-size: 0.8em;
+}
+.sectionh1 {
+  text-align: left;
+  margin: 20px 20px 20px 60px;
+  color: white;
+  font-size: 5em;
+}
+.sectionh1alt {
+  text-align: left;
+  margin: 20px 20px 20px 60px;
+  color: #69bbe9;
+  font-size: 5em;
+}
+ul {
+  position: relative;
+  z-index: 0;
+  display: block;
+  float: left;
+  margin: 125px 0 0 5px;
 }
 
-#para1 {
-  font-size: 25px;
-  width: 70%;
-  text-align: center;
-  padding-left: 180px;
+ul li {
+  position: relative;
+  display: block;
+  width: 152px;
+  margin-right: 10px;
 }
 
-#para2 {
-  font-size: 25px;
-  width: 70%;
-  text-align: center;
-  padding-left: 180px;
+ul li span {
+  display: block;
+  color: black;
+  min-width: 120px;
+  text-align: left;
+  text-decoration: none;
+  text-transform: uppercase;
+  line-height: 35px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 34px 43px 20px 30px;
+  margin: -20px 0px 0px 0px;
+}
+ul li span:hover {
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #203647;
 }
 
-#content {
-  background-color: #b0dffa;
-  height: 500px;
+ul li .altSpan {
+  display: block;
+  color: black;
+  min-width: 120px;
+  text-align: left;
+  text-decoration: none;
+  text-transform: uppercase;
+  line-height: 35px;
+  background-color: #69bbe9;
+  border-radius: 5px;
+  padding: 34px 43px 20px 30px;
+  margin: -20px 0px 0px 0px;
+}
+.tooltiptext {
+  visibility: hidden;
+  background-color: #203647;
+  color: #fff;
+  margin-left: 5px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+ul li span:hover .tooltiptext {
+  visibility: visible;
+}
+.contentFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #203647;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  border: none;
+  transition: 0.5s;
+  font-weight: bold;
+  cursor: pointer;
+}
+.contentFooter:hover {
+  line-height: 65px;
+}
+#chart {
+  margin: 40px;
+  padding-top: 180px;
 }
 </style>

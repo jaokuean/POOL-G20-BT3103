@@ -1,65 +1,42 @@
 <template>
   <div class="login">
+    <navbar></navbar>
     <img id="poolLogo" alt="pool logo" src="../assets/pool-logo-name.png" />
     <h4>Manage your subs, POOL your resources</h4>
     <div id="loginBox">
-      <input
-        class="loginFields"
-        type="text"
-        v-model="email"
-        placeholder="Email"
-      /><br />
-      <input
-        class="loginFields"
-        type="password"
-        v-model="password"
-        placeholder="Password"
-      /><br />
-      <input type="checkbox" id="checkbox" @click="remember_me" />
-      <span id="rememberMe">Remember Me</span><br />
-      <button @click="login"><span>Login</span></button>
       <p id="divider" style="">
-        <span id="textDivider">or sign in with</span>
+        <span id="textDivider"><i>Get started here</i></span>
       </p>
       <google-login></google-login>
     </div>
 
-    <p>
-      You don't have an account ? You can
-      <router-link to="/sign-up">Sign Up now</router-link>
-    </p>
+    <p>Pool © 2021</p>
   </div>
 </template>
 
 <script>
 import GoogleLogin from "./GoogleLogin";
+import navbar from "./NavBar";
 
 export default {
-  name: "login",
   data() {
-    return {
-      email: "",
-      password: "",
-    };
+    return {};
   },
   components: {
     GoogleLogin,
+    navbar,
   },
-  methods: {
-    remember_me: function () {
-      console.log("Remember me");
-    },
-  },
+  methods: {},
 };
 </script>
 
 <style scoped>
 /* "scoped" attribute limit the CSS to this component only */
 #poolLogo {
+  margin-top: 40px;
   width: 28%;
 }
 .login {
-  margin-top: 40px;
   text-align: center;
 }
 .loginFields {
@@ -78,7 +55,7 @@ export default {
   /* Size and position */
   width: 340px;
   margin: 30px auto 30px;
-  padding: 38px 5px 30px 5px;
+  padding: 15px 5px 30px 5px;
   position: relative;
 
   /* Styles */
@@ -90,7 +67,6 @@ export default {
 }
 
 p {
-  margin-top: 40px;
   font-size: 13px;
 }
 p a {
@@ -108,9 +84,7 @@ p a {
   flex-direction: column;
   align-items: center;
 }
-#rememberMe {
-  color: white;
-}
+
 #divider {
   display: flex;
   flex-direction: row;
@@ -129,44 +103,5 @@ p a {
   padding: 5px;
   font-size: 1.3em;
   margin: 5px;
-}
-
-button {
-  border-radius: 3px;
-  background-color: white;
-  border: none;
-  text-align: center;
-  padding: 15px 60px 15px 60px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 15px 0px 5px 0px;
-  text-transform: uppercase;
-}
-
-button span {
-  cursor: pointer;
-  display: inline-block;
-  position: relative;
-  transition: 0.5s;
-  color: black;
-}
-
-button span:after {
-  content: "\00bb";
-  position: absolute;
-  opacity: 0;
-  top: 0;
-  right: -20px;
-  transition: 0.5s;
-}
-
-button:hover span {
-  padding-right: 25px;
-  font-weight: bold;
-}
-
-button:hover span:after {
-  opacity: 1;
-  right: 0;
 }
 </style>

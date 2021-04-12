@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div id="container">
     <img
       alt="pool logo"
       src="../assets/pool-logo-name.png"
       style="width: 30%; max-height: 30vh"
     />
     <div id="inputBox">
+      <div v-if="error" class="alert alert-danger">{{ error }}</div>
       <h3>SET NEW PASSWORD</h3>
       <ul id="passwordHelp">
         Password should contain:
@@ -42,7 +43,8 @@
       /><br />
       {{ this.pwMessage }}
       <br />
-      <input type="checkbox" @click="togglePwdVisible()" />Show Password
+      <input type="checkbox" @click="togglePwdVisible()" />
+      <span style="color: white">Show/Hide Password</span>
       <br />
       <button type="submit" @click="submitPw()" class="submitBtn">
         Submit
@@ -53,14 +55,15 @@
 
 <script>
 import { mapGetters } from "vuex";
-import database from "../firebase.js";
+//import firebase from "firebase";
 
 export default {
   data() {
     return {
+      error: null,
       password: "",
       password2: "",
-      passwordType: "password",
+      passwordType: "text",
       pwMessage: "",
       isValid: false,
       has_minimum_lenth: false,
@@ -86,25 +89,12 @@ export default {
       } else {
         this.pwMessage = "Password Does not Match";
         this.isValid = false;
-        console.log("Mismatch password");
       }
     },
     submitPw: function () {
       if (this.isValid) {
         console.log("USERDATA: " + this.user.data.uid);
-        database
-          .firestore()
-          .collection("users")
-          .doc(this.user.data.uid)
-          .update({
-            pw: this.password,
-          })
-          .then(() => {
-            this.$router.push({ name: "Home" });
-          })
-          .catch((error) => {
-            console.error("Error writing document: ", error);
-          });
+        this.$router.push({ name: "Home" });
       } else {
         this.checkPassword();
         console.log("invalid password");
@@ -162,6 +152,9 @@ export default {
 
 <style scoped>
 /* "scoped" attribute limit the CSS to this component only */
+#container {
+  text-align: center;
+}
 .login {
   margin-top: 40px;
 }

@@ -7,7 +7,7 @@
         alt="pool logo"
         src="../assets/pool-logo-name.png"
         class="logo"
-        style="width: 40%"
+        style="width: 100%; text-align: center"
       />
       <h3>Manage your subs, POOL your resources</h3>
     </div>

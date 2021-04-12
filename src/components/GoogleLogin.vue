@@ -2,7 +2,7 @@
   <div class="container">
     <button @click="socialLogin" class="googlebtn">
       <img alt="Google Logo" src="../assets/google-logo.png" />
-      <span class="googelbtntxt">Google</span>
+      <span class="googelbtntxt">Log in with Google</span>
     </button>
   </div>
 </template>
@@ -119,11 +119,12 @@ button {
   background-color: white;
   border: none;
   text-align: center;
-  padding: 15px 40px 15px 40px;
+  padding: 0px;
   transition: all 0.5s;
   cursor: pointer;
   margin: 15px 0px 5px 0px;
-  text-transform: uppercase;
+  width: 68%;
+  height: 40px;
 }
 
 button span {
@@ -144,7 +145,7 @@ button span:after {
 }
 
 button:hover span {
-  padding-right: 25px;
+  padding-right: 15px;
   font-weight: bold;
 }
 
