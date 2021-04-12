@@ -6,7 +6,8 @@
             </a>
             <a id="feedNumber"><strong>{{feeds.length}}</strong></a>
         </div>
-        <ul>
+        <p v-show="loading"><i>Loading please wait...</i></p>
+        <ul v-show="!loading">
             <li v-for="(feed,index) in feeds" :key="index" @click="popup(index)">
                 <span id='li-container'>
                     <div style="width:20%;">
@@ -45,6 +46,7 @@ export default {
             popupTitle:"",
             popupContent:"",
             create:false,
+            loading:true,
         }
     },
     methods: {
@@ -52,7 +54,7 @@ export default {
             //Setting up references and user ID
             const uid = this.$store.getters.user.data.uid;
             const poolgroups_ref = database.firestore().collection('poolgroups');
-            const activities_ref = database.firestore().collection('activities')
+            const activities_ref = database.firestore().collection('activities');
             //Gets pools of user
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
                 querySnapShot.forEach((doc)=> {
@@ -111,6 +113,7 @@ export default {
         callback: function() {
             // Sort array according to date
             this.feeds = this.feeds.sort((a,b)=>b.date - a.date);
+            this.loading = false;
         },
         popup: function(index) {
             var modal = document.getElementById("myModal");
