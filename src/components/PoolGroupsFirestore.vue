@@ -224,7 +224,7 @@ export default {
 
     create: function () {
       let doc_id = this.$route.params.document_id
-      alert("In PoolGroupsFirestore\n" + doc_id)
+      //alert("In PoolGroupsFirestore\n" + doc_id)
       this.$router.push({name: 'CreateSubscription', params: { document_id: doc_id } })
     },
   },
