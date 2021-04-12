@@ -214,6 +214,17 @@ img {
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: rgb(209, 209, 209);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(114, 114, 114);
+  border-radius: 20px; 
+}
+
 /* Modal Content */
 .modal-content {
   position: relative;

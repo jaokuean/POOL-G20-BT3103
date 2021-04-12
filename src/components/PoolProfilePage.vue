@@ -6,18 +6,19 @@
         </div>
         <div id='members'>
             <ul>
-                <li v-for="member in members" :key="member.name">
-                    <img v-bind:src="member.profilePhoto"/>
-                    <p> {{member.name}} </p>
+                <li v-for="member in members" :key="member.index">
+                    <img class='memberImage' v-bind:src="member.profilePhoto"/>
+                    <a> {{member.name}} </a>
                 </li>
-            </ul>
+            </ul>   
         </div>
         <div id='accountDetails'>
-            <p> Username: </p>
-            <p v-show="this.show"> {{pool.sharedUserName}} </p>
-            <p> Password:  </p>
-            <p v-show="this.show"> {{pool.sharedPassword}} </p>
-            <button id="show-dets" v-on:click="show = !show">Show Details </button>
+            <p><strong> Username: </strong></p>
+            <p> {{pool.sharedUserName}} </p>
+            <p><strong> Password: </strong></p>
+            <p v-show="show"> {{pool.sharedPassword}} </p>
+            <p v-show="!show">{{blindpw}}</p>
+            <button id="show-dets" v-on:click="togglePassword">{{pwBtnTxt}}</button>
         </div>
         <div id='writeMsgBtnWrapper'>
             <a id='writeMsgBtn' @click="popup">Write a message! +</a>
@@ -59,11 +60,23 @@ export default {
             show: false,
             clicked:false,
             inputMsg:"",
+            blindpw:'',
+            pwBtnTxt: 'Show password',
         }
     },
     props:['pool'],
+    watch: {
+        pool: function(oldVal, newVal) {
+            if (oldVal != newVal) {
+                this.members = [];
+                this.feeds = [];
+                this.fetchData();
+            }  
+        }
+    },
     methods: {
         fetchData: function() {
+            this.blindpw = "*".repeat(this.pool.sharedPassword.length);
             const poolgroups_ref = database.firestore().collection('poolgroups');
             const users_ref = database.firestore().collection('users');
             const activities_ref = database.firestore().collection('activities');
@@ -148,6 +161,14 @@ export default {
             modal.style.display="none";
             this.inputMsg="";
             alert('Message written succesfully!')
+        },
+        togglePassword: function() {
+            if (this.show) {
+                this.pwBtnTxt = 'Show password';
+            } else {
+                this.pwBtnTxt = 'Hide password';
+            }
+            this.show = !this.show;
         }
     },
     created() {
@@ -196,11 +217,12 @@ export default {
     margin-top: 1rem;
 }
 
-#members img {
+.memberImage {
     height: 4em;
     width: 4em;
     display: block;
-    border-radius: 40%;
+    border-radius: 50%;
+    margin: auto;
 }
 
 #accountDetails{
@@ -233,6 +255,7 @@ export default {
 #feedsList {
     padding:0;
     margin-top: 3px;
+    margin-left: 1em;
     max-height: 50vh;   
     overflow-y: scroll;  
     overflow-x : hidden;
@@ -248,6 +271,18 @@ export default {
 .feedDate {
     text-align: right;
     font-size: 0.8em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: rgb(209, 209, 209);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(114, 114, 114);
+  border-radius: 20px; 
 }
 
 /* The Modal (background) */

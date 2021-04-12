@@ -14,12 +14,12 @@
               <img title='Back to default dashboard' id="homeIcon" src="../assets/home.png" @click="home"/>
             </span>
           </div>
-          <pending-pools v-if='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
-          <pool-profile-page v-bind:pool='pool' v-else/>
+          <pending-pools v-show='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
+          <pool-profile-page v-bind:pool='pool' v-show="doubleClickedPools"/>
         </div>
         <div id='rightCol'>
-          <account-sidebar v-if='!clickedPool'/>
-          <pool-sidebar v-bind:pool="pool" v-else/>
+          <account-sidebar v-show='!clickedPool'/>
+          <pool-sidebar v-bind:pool="pool" v-show="clickedPool"/>
         </div>
       </div>
     </div>
