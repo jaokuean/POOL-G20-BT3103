@@ -5,9 +5,9 @@
             <p class="msg" v-show="pendingPools.length==0 && !loading"><i>You have no pending pools</i></p>
             <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <ul>
-                <li class='poolItem' v-for="pendingPool in pendingPools" :key="pendingPool.index">
-                    <img v-bind:src="pendingPool.logo"/>
-                    {{pendingPool.fill}}
+                <li v-for="pendingPool in pendingPools" :key="pendingPool.index">
+                    <img class='pendingPoolImage' v-bind:src="pendingPool.logo"/>
+                    <a>{{pendingPool.poolName}}<br>Members: {{pendingPool.fill}}</a>
                 </li>
             </ul>
         </div>
@@ -16,9 +16,9 @@
             <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <p class="msg" v-show="myPools.length==0 && !loading"><i>You have no pools, get started by adding a subscription!</i></p>
             <ul>
-                <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)">
-                    <img v-bind:src="pool.logo"/>
-                    <p id='poolName'>{{pool.poolName}}</p>
+                <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)" title="Click to see in sidebar. Double click to expand">
+                    <img class='poolImage' v-bind:src="pool.logo"/>
+                    <a>{{pool.poolName}}</a>
                 </li>
             </ul>
             <div id='addSubContainer' title='Explore now!' @click="explore">
@@ -124,6 +124,10 @@ export default {
     color: white;
 }
 
+.pendingPoolImage {
+    margin: auto;
+}
+
 .msg {
     margin-left: 4rem;
     padding-bottom: 1em;
@@ -131,6 +135,15 @@ export default {
 
 .poolItem {
     cursor: pointer;
+    padding: 0.5em;
+    border-radius: 0.3em;
+}
+.poolItem:hover {
+    background: rgb(190, 190, 190);
+}
+
+.poolImage {
+    margin: auto;
 }
 
 h2 {
