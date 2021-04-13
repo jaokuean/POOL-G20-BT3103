@@ -39,9 +39,7 @@
           <li>
             <router-link to="about-us">About Us</router-link>
           </li>
-          <li>
-            <router-link to="contact-us">Contact Us</router-link>
-          </li>
+
           <button @click="goLogin" id="loginBtn">
             <span>Get Started</span>
           </button>
@@ -107,7 +105,7 @@ nav {
 nav ul {
   display: flex;
   margin: 4px 0 0 100px;
-  float: left;
+  float: right;
 }
 nav ul li {
   list-style: none;

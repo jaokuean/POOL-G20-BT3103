@@ -4,10 +4,8 @@ import store from './store.js'
 import Home from '@/components/Home';
 import Login from '@/components/Login';
 import SignUp from '@/components/SignUp';
-import Landing from '@/components/Landing';
 import ActivityFeed from '@/components/ActivityFeed';
 import AboutUs from '@/components/AboutUs';
-import ContactUs from '@/components/ContactUs';
 import Explore from '@/components/Explore';
 import PendingPools from '@/components/PendingPools';
 import SetPassword from '@/components/SetPassword';
@@ -17,7 +15,7 @@ import UserProfle from '@/components/UserProfile';
 import Statistics from '@/components/Statistics';
 import CreateSubscription from '@/components/CreateSubscription';
 import Logout from '@/components/Logout';
-
+import PaymentSetup from '@/components/PaymentSetup';
 Vue.use(Router);
 
 const router = new Router({
@@ -31,11 +29,6 @@ const router = new Router({
             path: '/login',
             name: 'Login',
             component: Login
-        },
-        {
-            path: '/landing',
-            name: 'Landing',
-            component: Landing
         },
         {
             path: '/sign-up',
@@ -67,17 +60,10 @@ const router = new Router({
             }
         },
         {
-            path: '/contact-us',
-            name: 'ContactUs',
-            component: ContactUs,
-            meta: {
-                requiresAuth: true
-            }
-        },
-        {
             path: '/explore',
             name: 'Explore',
             component: Explore,
+            props: true,
             meta: {
                 requiresAuth: true
             }
@@ -135,6 +121,10 @@ const router = new Router({
             path: '/logout',
             name: Logout,
             component: Logout,
+        }, {
+            path: '/payment-setup',
+            name: PaymentSetup,
+            component: PaymentSetup,
         },
 
     ]

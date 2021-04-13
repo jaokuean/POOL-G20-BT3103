@@ -63,11 +63,9 @@ export default {
         .collection("users")
         .doc(uid)
         .set({
-          defaulyPaymentMethod: "",
           email: email,
           name: name,
           phone: "",
-          pools: [],
           profilePhoto: photoUrl,
           pw: "",
         })

@@ -6,10 +6,10 @@
         alt="pool logo"
         src="../assets/pool-logo-name.png"
         class="logo"
-        style="width: 30%; margin-top: 100px"
+        style="width: 30%; margin-top: 60px"
       />
       <h5>Manage your subs, POOL your resources</h5>
-      <searchbar style="margin: 0 auto"></searchbar>
+      <explore-by-category v-bind:servCatList="services"></explore-by-category>
     </div>
 
     <div class="content" v-if="showTopSubs">
@@ -27,7 +27,7 @@
             <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
             <span>
               <p class="serviceNames">{{ serv.name }}</p>
-              <p class="servicePoolsCount">{{ serv.score }} Pools</p>
+              <p class="servicePoolsCount">{{ serv.score }} Open Pools</p>
               <span class="tooltiptext">Join Pool</span>
             </span>
           </li>
@@ -46,43 +46,8 @@
       <div id="chart">
         <top-subs-bar-chart></top-subs-bar-chart>
       </div>
-      <button v-on:click="showTopSubs = !showTopSubs" class="contentFooter">
-        <span> Click here to view more </span>
-      </button>
-    </div>
-
-    <div class="content" v-if="showTopSearch">
-      <div class="sectionHeader">
-        <h1 class="sectionh1alt">Trending Searches</h1>
-      </div>
-
-      <div
-        id="topSubListalt"
-        v-for="serv in sortByScore(services).slice(0, 5)"
-        :key="serv"
-      >
-        <ul>
-          <li>
-            <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
-            <span class="altSpan">
-              <p class="serviceNames">{{ serv.name }}</p>
-              <p class="servicePoolsCount">{{ serv.score }} Pools</p>
-            </span>
-          </li>
-        </ul>
-      </div>
-
-      <button v-on:click="showTopSearch = !showTopSearch" class="contentFooter">
-        <span> Click here to view more </span>
-      </button>
-    </div>
-    <div class="content" v-else>
-      <div class="sectionHeader">
-        <h1 class="sectionh1alt">Trending Searches</h1>
-      </div>
-
-      <button @click="showTopSearch = !showTopSearch" class="contentFooter">
-        <span> Click here to view more </span>
+      <button v-on:click="showTopSubs = !showTopSubs" class="contentFooterAlt">
+        <span> &larr; Go back </span>
       </button>
     </div>
   </div>
@@ -93,14 +58,13 @@ import database from "../firebase";
 import firebase from "firebase";
 import navbar from "./NavBar";
 import { mapGetters } from "vuex";
-import Searchbar from "./Searchbar.vue";
 import TopSubsBarChart from "./charts/TopSubsBarChart.js";
-
+import ExploreByCategory from "./ExploreByCategory.vue";
 export default {
   components: {
     navbar,
-    Searchbar,
     TopSubsBarChart,
+    ExploreByCategory,
   },
   computed: {
     ...mapGetters({
@@ -123,10 +87,8 @@ export default {
   methods: {
     goToPool: function () {
       if (this.user.loggedIn) {
-        console.log("User is login.");
         this.$router.push("search-service");
       } else {
-        console.log("User not logged in.");
         this.$router.push("login");
       }
     },
@@ -160,6 +122,7 @@ export default {
             name: doc.data().serviceName,
             score: doc.data().score,
             logo: doc.data().logo,
+            category: doc.data().category,
           });
         });
       });
@@ -169,12 +132,28 @@ export default {
       const pools_ref = database.firestore().collection("pools");
       const services_ref = database.firestore().collection("services");
 
+      services_ref.get().then((querySnapShot) => {
+        querySnapShot.forEach(function (doc) {
+          doc.ref
+            .update({
+              score: 0,
+            })
+            .then(() => {
+              console.log("Document successfully updated!");
+            })
+            .catch((error) => {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+            });
+        });
+      });
+
       pools_ref.get().then((poolSnap) => {
         poolSnap.forEach(async (pool) => {
           if (pool.exists) {
             const poolObj = pool.data();
             var toAdd = pool.data().maxSize - pool.data().remaining;
-            console.log(toAdd);
+            //console.log(toAdd);
             services_ref
               .doc(poolObj.serviceId)
               .update({
@@ -224,7 +203,7 @@ export default {
   height: 9.5em;
   width: 9.5em;
   display: block;
-  border-radius: 10%;
+  border-radius: 25px;
   margin-left: 20px;
   filter: drop-shadow(5px 5px 5px #222);
 }
@@ -312,7 +291,7 @@ ul li .altSpan {
 }
 .tooltiptext {
   visibility: hidden;
-  background-color: #203647;
+  background-color: rgba(29, 106, 154, 0.72);
   color: #fff;
   margin-left: 5px;
   text-align: center;
@@ -339,11 +318,29 @@ ul li span:hover .tooltiptext {
   font-weight: bold;
   cursor: pointer;
 }
+.contentFooterAlt {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #69bbe9;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  border: none;
+  transition: 0.5s;
+  font-weight: bold;
+  cursor: pointer;
+}
 .contentFooter:hover {
   line-height: 65px;
 }
+.contentFooterAlt:hover {
+  line-height: 65px;
+}
 #chart {
-  margin: 40px;
-  padding-top: 180px;
+  margin: 0px;
+  padding: 180px 80px 80px 50px;
+  background-color: #203647;
 }
 </style>
