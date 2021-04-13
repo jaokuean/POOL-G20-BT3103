@@ -1,5 +1,6 @@
 <template>
     <div>
+        <nav-bar/>
         <h1 id='title'>Pool statistics</h1>
         <div id="mainContainer">
             <div style="padding:0.5em">
@@ -29,12 +30,14 @@
 import PoolsChart from './charts/PoolsChart.vue'
 import SpendingsChart from './charts/SpendingsChart.vue'
 import PricingChart from './charts/PricingChartComponent.vue'
+import NavBar from './NavBar.vue'
 
 export default {
     components:{
         PoolsChart,
         SpendingsChart,
-        PricingChart
+        PricingChart,
+        NavBar
     },
     created() {
         console.log("mounting")

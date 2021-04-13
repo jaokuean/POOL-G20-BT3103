@@ -9,7 +9,8 @@
             </div>
             <div id = "members-container">
                 <p><strong> Members </strong></p>
-                <ul>
+                <p id='loadingText' v-show="loading"><i>Loading please wait...</i></p>
+                <ul v-show="!loading">
                     <li v-for="member in members" v-bind:key="member.name">
                         <img v-bind:src = "member.profilePhoto">
                         <p> {{member.name}} </p>
@@ -26,7 +27,8 @@ import database from '../firebase.js'
 export default {
     data() {
         return {
-            members:[]
+            members:[],
+            loading: true,
         }
     }, 
     props: ['pool'],
@@ -34,19 +36,37 @@ export default {
         this.fetchMembers();
         console.log(this.pool);
     },
+    watch: {
+        pool: function() {
+            this.members = [];
+            this.loading = true;
+            this.fetchMembers();
+        }
+    },
     methods: {
         fetchMembers: function() {
             const poolgroups_ref = database.firestore().collection('poolgroups');
             const users_ref = database.firestore().collection('users');
             // Getting members using poolGroups
             poolgroups_ref.where("poolID","==",this.pool.poolID).get().then((querySnapShot) => {
+                const size = querySnapShot.size;
+                let count = 0;
                 querySnapShot.forEach((doc) => {
                     users_ref.doc(doc.data().userID).get().then((doc) => {
                         this.members.push(doc.data());
+                        
+                        // For loading callback
+                        count = count + 1;
+                        if (count == size) {
+                            this.stopLoad();
+                        }
                     })
                 })
             })
         },
+        stopLoad: function() {
+            this.loading = false;
+        }
     }
 }
 
@@ -55,17 +75,14 @@ export default {
 
 <style scoped>
 
-
 .main-wrapper {
     height: 100%;
     position: relative;
-    overflow-y: scroll;
     background-color: #FFFFFF;
     right: 0;
     width: 100%;
     align-items: center;
 }
-
 
 #servicePic {
     border-radius: 50%;
@@ -78,26 +95,37 @@ export default {
     margin-right: auto;
 }
 
-li > img {
-    border-radius: 50%;
-    position: relative;
-    overflow: hidden;
-    margin: 0;
-    width: 70%;
-    height: 50%;
+#loadingText {
+    padding-bottom: 1em;
+    color: white;
 }
 
 ul{
     flex-wrap: wrap;
     list-style-type: none;
-    width: calc(100% * (1/1.5));
+    padding-left: 0;
     justify-content: center;
+    overflow-y: scroll;
 }
+
 li{
     text-align: center;
     padding: 10px;
     margin: 10px;
     align-items: center;
+}
+
+li > img {
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    width: 5em;
+    height: 5em;
+}
+
+li > p {
+    color: white;
 }
 
 #sidebar-header {
@@ -109,7 +137,7 @@ li{
     border-radius: 1em;
     text-align: center;
     justify-content: center;
-    margin: auto;
+    margin: 1em;
 }
 
 #members-container p:first-child {
@@ -127,5 +155,8 @@ li{
     display: inline-block;
 }
 
-
+::-webkit-scrollbar {
+  width:0;
+  background: transparent;
+}
 </style>

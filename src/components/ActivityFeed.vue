@@ -6,7 +6,8 @@
             </a>
             <a id="feedNumber"><strong>{{feeds.length}}</strong></a>
         </div>
-        <ul>
+        <p v-show="loading"><i>Loading please wait...</i></p>
+        <ul v-show="!loading">
             <li v-for="(feed,index) in feeds" :key="index" @click="popup(index)">
                 <span id='li-container'>
                     <div style="width:20%;">
@@ -44,7 +45,7 @@ export default {
             feedsID: new Set(),
             popupTitle:"",
             popupContent:"",
-            create:false,
+            loading:true,
         }
     },
     methods: {
@@ -52,65 +53,69 @@ export default {
             //Setting up references and user ID
             const uid = this.$store.getters.user.data.uid;
             const poolgroups_ref = database.firestore().collection('poolgroups');
-            const activities_ref = database.firestore().collection('activities')
+            const activities_ref = database.firestore().collection('activities');
             //Gets pools of user
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
+                const numPools = querySnapShot.size;
+                let poolCount = 0;
+                if (numPools == 0) {
+                    this.loading = false;
+                }
                 querySnapShot.forEach((doc)=> {
+                    
                     // Get the activity feeds using poolID
                     activities_ref.where("pool","==",doc.data().poolID).onSnapshot((querySnapShot) => {
-                        let querySize = querySnapShot.size;
-                        let count = 0;
+                        poolCount = poolCount + 1;
+                        let numPoolFeeds = querySnapShot.size;
+                        let poolFeedCount = 0;
+                        if (poolCount == numPools && numPoolFeeds == 0) {
+                            this.loading = false;
+                        }
+
                         querySnapShot.forEach((doc) => {
+                            // For callback
+                            poolFeedCount = poolFeedCount + 1;
+
                             let feedData = doc.data();
                             feedData['date'] = feedData.dateCreated.toDate();
-                            console.log(doc.id); // Debugging
-                            // Getting image of the service involved
-                            database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
-                                if (docSnapShot.exists) {
-                                    database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
-                                        if (docSnapShot.exists) {
-                                            feedData['imgURL'] = docSnapShot.data().logo;
-                                            // For callback
-                                            if (querySize == count) {
-                                                this.callback();
-                                            }
-                                        } else {
-                                            console.log("Services for this activity does not exist");
-                                            // For callback
-                                            if (querySize == count) {
-                                                this.callback();
-                                            }
-                                        }
-                                    }) 
-                                } else {
-                                    console.log("Pool for this activity does not exist");
-                                }
-                            })
-
                             // Create short message
                             if (feedData.content.length > 76) {
                                 feedData.shortContent = feedData.content.slice(0,76) + '...';
                             } else {
                                 feedData.shortContent = feedData.content;
                             }
-                            
-                            // Check if feeds already exists
-                            if (!this.feedsID.has(doc.id)) {
-                                // Feed does not exist, add to feeds
-                                this.feeds.push(feedData);
-                                this.feedsID.add(doc.id);
-                            }
 
-                            // For callback
-                            count = count + 1;
+                            // Getting image of the service involved
+                            database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
+                                database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
+                                    if (docSnapShot.exists) {
+                                        feedData['imgURL'] = docSnapShot.data().logo;
+                                    } else {
+                                        console.log("Services for this activity does not exist");
+                                    }
+                                    // Check if feeds already exists
+                                    if (!this.feedsID.has(doc.id)) {
+                                        // Feed does not exist, add to feeds
+                                        this.feeds.unshift(feedData);
+                                        this.feedsID.add(doc.id);
+                                    }
+                                    // For callback
+                                    if (numPoolFeeds == poolFeedCount && poolCount == numPools) {
+                                        this.callback();
+                                    }
+                                })
+                            })
                         });
                     })
                 });
+            }).then(() => {
+
             })
         },
         callback: function() {
             // Sort array according to date
             this.feeds = this.feeds.sort((a,b)=>b.date - a.date);
+            this.loading = false;
         },
         popup: function(index) {
             var modal = document.getElementById("myModal");
@@ -212,6 +217,17 @@ img {
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: rgb(209, 209, 209);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(114, 114, 114);
+  border-radius: 20px; 
 }
 
 /* Modal Content */

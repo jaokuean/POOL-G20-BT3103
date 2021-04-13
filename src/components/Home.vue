@@ -29,6 +29,14 @@
               />
             </span>
           </div>
+<<<<<<< HEAD
+          <pending-pools v-show='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
+          <pool-profile-page v-bind:pool='pool' v-if="doubleClickedPools"/>
+        </div>
+        <div id='rightCol'>
+          <account-sidebar v-show='!clickedPool'/>
+          <pool-sidebar v-bind:pool="pool" v-if="clickedPool"/>
+=======
           <pending-pools
             v-if="!doubleClickedPools"
             @clicked="onClicked"
@@ -39,6 +47,7 @@
         <div id="rightCol">
           <account-sidebar v-if="!clickedPool" />
           <pool-sidebar v-bind:pool="pool" v-else />
+>>>>>>> b25d714e5d94b2a4582262592ceb688c4d041a96
         </div>
       </div>
     </div>

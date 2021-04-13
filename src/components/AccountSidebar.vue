@@ -53,6 +53,10 @@ export default {
                 // For callback
                 let count = 0;
                 const querySize = querySnapShot.size;
+                console.log(querySize);
+                if (querySize == 0) {
+                    this.loading = false;
+                }
 
                 // For date comparison
                 let currentDate = new Date();
@@ -148,7 +152,7 @@ export default {
 
 .userDetailText {
     color: grey;
-    font-size: 1em;
+    font-size: 1vw;
 }
 
 #monthlyspendings {

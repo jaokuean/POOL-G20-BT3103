@@ -17,7 +17,7 @@ export default {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Breakdown'
+                    text: 'Breakdown of spendings ($)'
                 },
                 responsive: true,
                 maintainAspectRatio: false,
@@ -33,6 +33,11 @@ export default {
             poolgroups_ref.where('userID','==', uid).get().then(querySnapShot => {
                 const size = querySnapShot.size;
                 let count = 0;
+                if (size == 0) {
+                    this.options.title.text = 'You have no subscriptions';
+                    this.options.legend.display = false;
+                    this.render();
+                }
                 querySnapShot.docs.forEach(doc => {
                     pools_ref.doc(doc.data().poolID).get().then(doc=>{
                         if (doc.exists) {

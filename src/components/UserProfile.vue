@@ -1,226 +1,310 @@
 <template>
-  <div id="mainComponent">
-    <navbar></navbar>
-    <div id="info">
-      <img v-bind:src="imgURL" />
-      <h2>{{ username }}</h2>
+    <div>
+        <navbar></navbar>
+        <div class="mainContainer">
+            <h1>Edit Profile</h1>
+            
+            <div id="contact">
+                <div id='topContainer'>
+                    <img v-bind:src = "profilePhoto" id="profilePic"/>
+                    <h2>{{userName}}</h2>
+                    <a class="userDetailText">{{email}}</a>
+                </div>
+                <div id="formsContainer">
+                    <form id='userInfoForm'>
+                        <h3>User Information</h3>
+                        <fieldset>
+                            <label>Username:</label>
+                            <input placeholder="Username" v-model="userNameUpdated" type="text" tabindex="1" required autofocus>
+                        </fieldset>
+                        <fieldset>
+                            <label>Profile Photo:</label>
+                            <input placeholder="Username" v-model="profilePhotoUpdated" type="text" tabindex="1" required autofocus>
+                        </fieldset>
+                        <fieldset>
+                            <label>Phone number:</label>
+                            <input placeholder="Your phone number" v-model="phoneNumber" type="tel" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <button name="update" type="button" id="updateBtn" @click="updateUser">Update User</button>
+                        </fieldset>
+                    </form>
+                    <div class="vl"></div>
+                    <form id='cardInfoForm'>
+                        <h3>Card Details</h3>
+                        <fieldset>
+                            <label>Card name:</label>
+                            <input placeholder="Your card name" v-model="cardName" type="text" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <label>Card number:</label>
+                            <input placeholder="Your card number" v-model="cardNumber" type="tel" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <label>CVC:</label>
+                            <input placeholder="Your card cvc" v-model="cvc" type="tel" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <button name="update" type="button" id="updateBtn" @click="updateCard">Update Card Details</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div id="creditCard">
-      <h3>Credit Card Information</h3>
-      <div>
-        Bank Name: {{ bankname }}
-        <br />
-        Credit Card Number: {{ creditNum }} <br /><br />
-        <button
-          type="button"
-          v-on:click="updateCard = !updateCard"
-          v-show="!updateCard"
-        >
-          Update Card
-        </button>
-        <form v-show="updateCard">
-          <label for="newCrediCard">
-            Please enter your new credit card number
-          </label>
-          <br />
-          <input id="newCreditCard" type="number" v-model.lazy="newCC" />
-          <br /><br />
-          <label for="newCvc">
-            Please enter the CVC for your credit card
-          </label>
-          <br />
-          <input id="newCvc" type="number" v-model.lazy="newCVC" /> <br /><br />
-          <input
-            type="submit"
-            value="Update Card"
-            v-on:click.prevent="updateCreditCard()"
-          />
-        </form>
-      </div>
-      <h3>Monthly Spending: ${{ monSpending.toFixed(2) }}</h3>
-    </div>
-
-    <div id="username">
-      <h3>
-        Username: {{ username }} <img v-bind:src="copy" /> Password:
-        {{ password }} <img v-bind:src="copy" /> <img v-bind:src="closeEye" />
-      </h3>
-    </div>
-
-    <div id="pools">
-      <h3>Pools:</h3>
-      <ul>
-        <li v-for="pool in pools" :key="pool.index">
-          <img v-bind:src="pool.imgURL" />
-          {{ pool.name }}
-        </li>
-      </ul>
-    </div>
-  </div>
 </template>
 
 <script>
-//how to add more white spaces between username and password
-//how to space out the pictures inside the pools
-
 import database from "../firebase";
 import navbar from "./NavBar";
-export default {
-  components: {
-    navbar,
-  },
-  data: function () {
-    return {
-      imgURL:
-        "data:image/png;base64,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",
-      monSpending: 0,
-      creditNum: "471xxxxxxxxxx077",
-      username: "John T",
-      password: "jt33284991",
-      bankname: "United Overseas Bank Limited",
-      copy: "https://image.flaticon.com/icons/png/512/88/88026.png",
-      closeEye:
-        "https://s3.amazonaws.com/iconbros/icons/icon_pngs/000/000/036/original/eye-closed.png?1509903854",
-      pools: [],
-      updateCard: false,
-      newCC: 0,
-      newCVC: 0,
-    };
-  },
-  methods: {
-    fetchData: function () {
-      const uid = this.$store.getters.user.data.uid;
-      const userRef = database.firestore().collection("users");
-      const cardRef = database.firestore().collection("creditcards");
-      const poolgroupsRef = database.firestore().collection("poolgroups");
-      const poolRef = database.firestore().collection("pools");
-      const serviceRef = database.firestore().collection("services");
-      userRef
-        .doc(uid)
-        .get()
-        .then((doc) => {
-          this.username = doc.data().name;
-          this.password = doc.data().pw;
-          this.imgURL = doc.data().profilePhoto;
-        });
-      cardRef
-        .where("userID", "==", uid)
-        .get()
-        .then((querySnapShot) => {
-          querySnapShot.forEach((doc) => {
-            this.creditNum =
-              doc.data().cardNumber.toString().slice(0, 2) +
-              "xx xxxx xxxx xxxx";
-          });
-        });
-      poolgroupsRef
-        .where("userID", "==", uid)
-        .get()
-        .then((querySnapShot) => {
-          querySnapShot.forEach((doc) => {
-            const p = {};
-            const poolID = doc.data().poolID;
-            poolRef
-              .doc(poolID)
-              .get()
-              .then((doc) => {
-                serviceRef
-                  .doc(doc.data().serviceId)
-                  .get()
-                  .then((service) => {
-                    p["imgURL"] = service.data().logo;
-                    const add =
-                      service.data().fee /
-                      (doc.data().maxSize - doc.data().remaining);
-                    this.monSpending += add;
-                  });
-                p["name"] = doc.data().poolName;
-              });
-            this.pools.push(p);
-          });
-        });
-    },
 
-    updateCreditCard: function () {
-      const cardRef = database.firestore().collection("creditcards");
-      const uid = this.$store.getters.user.data.uid;
-      cardRef
-        .where("userID", "==", uid)
-        .get()
-        .then((querySnapShot) => {
-          if (querySnapShot.empty) {
-            cardRef.add({
-              cardName: this.username,
-              cardNumber: this.newCC,
-              cvc: this.newCVC,
-              cardExpiry: database.firestore.FieldValue.serverTimestamp(),
-              userID: uid,
-            });
-          } else {
-            querySnapShot.forEach((doc) => {
-              doc.ref.update({
-                cardNumber: this.newCC,
-                cvc: this.newCVC,
-              });
-            });
-          }
-        });
-      this.updateCard = !this.updateCard;
+export default {
+    components: {
+        navbar,
     },
-  },
-  created() {
-    this.fetchData();
-  },
+    data: function () {
+        return {
+            userName:'',
+            userNameUpdated:'',
+            profilePhoto:'',
+            profilePhotoUpdated:'',
+            email:'',
+            phoneNumber:'',
+            cardName:'',
+            cardNumber:'',
+            cvc:'',
+            creditExist:false,
+            creditId:'',
+            uid:this.$store.getters.user.data.uid,
+        };
+    },
+    methods: {
+        fetchData: function () {
+            const userRef = database.firestore().collection("users");
+            const cardRef = database.firestore().collection("creditcards");
+            userRef.doc(this.uid).get().then(doc => {
+                const user = doc.data();
+                this.userName = user.name;
+                this.userNameUpdated = user.name;
+                this.profilePhoto = user.profilePhoto;
+                this.profilePhotoUpdated = user.profilePhoto;
+                this.email = user.email;
+                this.phoneNumber = user.phone;
+            }).then(() => {
+                cardRef.where('userID','==',this.uid).get().then(querySnapShot => {
+                    querySnapShot.forEach(doc => {
+                        const card = doc.data();
+                        this.cardName = card.cardName;
+                        this.cardNumber = card.cardNumber;
+                        this.cvc = card.cvc;
+                        this.creditId = doc.id;
+                        this.creditExist = true;
+                    })
+                })
+            })
+        },
+        updateCard: function() {
+            if (this.cardNumber.length != 16) {
+                alert("Please input a correct credit card number (16 characters)");
+                console.log(this.cardNumber);
+                return;
+            } else if (this.cvc.length != 3) {
+                alert("Please input a correct cvc number (3 characters)");
+                return;
+            } else if (this.cardName.length < 1) {
+                alert("Please input a card name");
+                return;
+            } else if (!this.checkAllNumbers(this.cardNumber)){
+                alert('Please make sure that card number contains only numbers');
+                return;
+            } else if (!this.checkAllNumbers(this.cvc)) {
+                alert('Please make sure that cvc contains only numbers');
+                return;
+            }
+            console.log("updatecard called");
+            if (this.creditExist) {
+                const creditcard_ref = database.firestore().collection('creditcards').doc(this.creditId);
+                creditcard_ref.update({
+                    cardNumber:this.cardNumber,
+                    cardName:this.cardName,
+                    cvc:this.cvc
+                }).then(() => {
+                    alert("Credit card updated!");
+                })
+            } else {
+                const creditcard_ref = database.firestore().collection('creditcards');
+                creditcard_ref.add({
+                    cardNumber:this.cardNumber,
+                    cardName:this.cardName,
+                    cvc:this.cvc,
+                    userID:this.uid
+                }).then(() => {
+                    alert("Credit card created!");
+                })
+            }
+        },
+        updateUser: function () {
+            const user_ref = database.firestore().collection('users').doc(this.uid);
+            user_ref.update({
+                name:this.userNameUpdated,
+                phone:this.phoneNumber,
+                profilePhoto:this.profilePhotoUpdated
+            }).then(() => {
+                alert("User updated!");
+                this.userName = this.userNameUpdated;
+                this.profilePhoto = this.profilePhotoUpdated;
+            })
+        },
+        checkAllNumbers: function(string) {
+            const numArray = ['0','1','2','3','4','5','6','7','8','9'];
+            for (var i = 0; i < string.length; i++) {
+                if (numArray.indexOf(string[i]) <= -1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    },
+    created() {
+        this.fetchData();
+    },
 };
 </script>
 
 <style scoped>
-#mainComponent {
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 1em;
+}
+
+h3 {
+    text-align: center;
+}
+
+.mainContainer {
+  max-width: 50%;
+  margin: 1em auto;
+  position: relative;
+}
+
+#topContainer {
+    text-align: center;
+}
+
+#formsContainer {
+  display: grid;
+  grid-template-columns: 10fr 1fr 10fr;
+  margin-top: 10px;
+}
+
+.vl {
+  border-left: 0.1em solid black;
+  
+  margin-left: 50%;
+}
+
+#profilePic {
+    width: 10em;
+    height: 10em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.userDetailText {
+    color: grey;
+    font-size: 1em;
+}
+
+#contact {
+  background: #F9F9F9;
+  border-radius: 1em;
+  padding: 25px;
+  margin: 2em 0;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+fieldset {
+  border: medium none !important;
+  margin: 0 0 10px;
+  min-width: 100%;
+  padding: 0;
   width: 100%;
 }
 
-#username {
-  background: #69bbe9;
-  border-start-end-radius: 1rem;
-  border-end-end-radius: 1rem;
+#contact input[type="text"],
+#contact input[type="tel"] {
+  width: 100%;
+  border: 1px solid #ccc;
+  background: #FFF;
+  margin: 0 0 5px;
+  padding: 10px;
 }
 
-ul {
-  background: #69bbe9;
-  border-start-end-radius: 1rem;
-  border-end-end-radius: 1rem;
-  color: white;
-  padding: 0;
+#contact input[type="text"]:hover,
+#contact input[type="tel"]:hover {
+  -webkit-transition: border-color 0.3s ease-in-out;
+  -moz-transition: border-color 0.3s ease-in-out;
+  transition: border-color 0.3s ease-in-out;
+  border: 1px solid #aaa;
 }
 
-li {
-  display: inline-block;
+#contact button[type="button"] {
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  background: #4CAF50;
+  color: #FFF;
+  margin: 0 0 5px;
+  padding: 10px;
+  font-size: 15px;
+}
+
+#contact button[type="submit"]:hover {
+  background: #43A047;
+  -webkit-transition: background 0.3s ease-in-out;
+  -moz-transition: background 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#contact button[type="submit"]:active {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.copyright {
   text-align: center;
-  margin: 1rem;
-  margin-top: 0;
 }
 
-#pools img {
-  height: 7em;
-  width: 7em;
-  display: block;
-  border-radius: 50%;
+#contact input:focus {
+  outline: 0;
+  border: 1px solid #aaa;
 }
 
-#info h2 {
-  background: #f4f5f5;
-  width: 11%;
+::-webkit-input-placeholder {
+  color: #888;
 }
 
-#creditCard p {
-  background: #f4f5f5;
-  border-start-end-radius: 1rem;
-  border-end-end-radius: 1rem;
+:-moz-placeholder {
+  color: #888;
 }
 
-#username img {
-  height: 0.8em;
-  width: 0.8em;
+::-moz-placeholder {
+  color: #888;
+}
+
+:-ms-input-placeholder {
+  color: #888;
 }
 </style>

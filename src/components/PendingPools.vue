@@ -5,9 +5,9 @@
             <p class="msg" v-show="pendingPools.length==0 && !loading"><i>You have no pending pools</i></p>
             <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <ul>
-                <li class='poolItem' v-for="pendingPool in pendingPools" :key="pendingPool.index">
-                    <img v-bind:src="pendingPool.logo"/>
-                    {{pendingPool.fill}}
+                <li v-for="pendingPool in pendingPools" :key="pendingPool.index">
+                    <img class='poolImage' v-bind:src="pendingPool.logo"/>
+                    <a>{{pendingPool.poolName}}<br>Members: {{pendingPool.fill}}</a>
                 </li>
             </ul>
         </div>
@@ -16,9 +16,9 @@
             <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <p class="msg" v-show="myPools.length==0 && !loading"><i>You have no pools, get started by adding a subscription!</i></p>
             <ul>
-                <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)">
-                    <img v-bind:src="pool.logo"/>
-                    <p id='poolName'>{{pool.poolName}}</p>
+                <li class='poolItem' v-for="pool in myPools" :key="pool.index" @click="oneClick(pool)" title="Click to see in sidebar. Double click to expand">
+                    <img class='poolImage' v-bind:src="pool.logo"/>
+                    <a>{{pool.poolName}}</a>
                 </li>
             </ul>
             <div id='addSubContainer' title='Explore now!' @click="explore">
@@ -54,6 +54,9 @@ export default {
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
                 const size = querySnapShot.size;
                 let count = 0;
+                if (size == 0) {
+                    this.loading = false;
+                }
                 querySnapShot.forEach((doc)=> {
                     // Gets the pool using poolID
                     const poolID = doc.data().poolID;
@@ -131,6 +134,19 @@ export default {
 
 .poolItem {
     cursor: pointer;
+    padding: 0.5em;
+    border-radius: 0.3em;
+}
+.poolItem:hover {
+    background: rgb(190, 190, 190);
+}
+
+.poolImage {
+    margin: auto;
+    height: 4em;
+    width: 4em;
+    display: block;
+    border-radius: 10%;
 }
 
 h2 {
@@ -148,20 +164,6 @@ li {
     text-align: center;
     margin: 1rem;
     margin-top: 0;
-}
-
-#pendingPoolsContainer img {
-    height: 4em;
-    width: 4em;
-    display: block;
-    border-radius: 10%;
-}
-
-#myPoolsContainer img {
-    height: 4em;
-    width: 4em;
-    display: block;
-    border-radius: 50%;
 }
 
 #poolName {
