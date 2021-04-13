@@ -1,25 +1,53 @@
 <template>
   <div>
-    <navbar/>
-    <div id='mainContainer'>
-      <activity-feed id='activityFeed' v-show="activityOpen"/>
-      <div id='rightContainer'>
-        <div id='mainCol'>
+    <navbar />
+    <div id="mainContainer">
+      <activity-feed id="activityFeed" v-show="activityOpen" />
+      <div id="rightContainer">
+        <div id="mainCol">
           <div id="topContainer">
-            <span id='toggleAF' title='Toggle ActivityFeed'>
-              <img class="arrowIcon" src="../assets/left-arrow-angle.png" v-show="activityOpen" @click="toggle"/>
-              <img class="arrowIcon" src="../assets/right-arrow-angle.png" v-show="!activityOpen" @click="toggle"/>
+            <span id="toggleAF" title="Toggle ActivityFeed">
+              <img
+                class="arrowIcon"
+                src="../assets/left-arrow-angle.png"
+                v-show="activityOpen"
+                @click="toggle"
+              />
+              <img
+                class="arrowIcon"
+                src="../assets/right-arrow-angle.png"
+                v-show="!activityOpen"
+                @click="toggle"
+              />
             </span>
-            <span id='back'>
-              <img title='Back to default dashboard' id="homeIcon" src="../assets/home.png" @click="home"/>
+            <span id="back">
+              <img
+                title="Back to default dashboard"
+                id="homeIcon"
+                src="../assets/home.png"
+                @click="home"
+              />
             </span>
           </div>
+<<<<<<< HEAD
           <pending-pools v-show='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
           <pool-profile-page v-bind:pool='pool' v-if="doubleClickedPools"/>
         </div>
         <div id='rightCol'>
           <account-sidebar v-show='!clickedPool'/>
           <pool-sidebar v-bind:pool="pool" v-if="clickedPool"/>
+=======
+          <pending-pools
+            v-if="!doubleClickedPools"
+            @clicked="onClicked"
+            @dbclicked="onDbClicked"
+          />
+          <pool-profile-page v-bind:pool="pool" v-else />
+        </div>
+        <div id="rightCol">
+          <account-sidebar v-if="!clickedPool" />
+          <pool-sidebar v-bind:pool="pool" v-else />
+>>>>>>> b25d714e5d94b2a4582262592ceb688c4d041a96
         </div>
       </div>
     </div>
@@ -27,12 +55,12 @@
 </template>
 
 <script>
-import navbar from './NavBar.vue';
-import ActivityFeed from './ActivityFeed.vue'
-import AccountSidebar from './AccountSidebar.vue'
-import PendingPools from './PendingPools.vue'
-import PoolProfilePage from './PoolProfilePage.vue'
-import PoolSidebar from './PoolSidebar.vue'
+import navbar from "./NavBar.vue";
+import ActivityFeed from "./ActivityFeed.vue";
+import AccountSidebar from "./AccountSidebar.vue";
+import PendingPools from "./PendingPools.vue";
+import PoolProfilePage from "./PoolProfilePage.vue";
+import PoolSidebar from "./PoolSidebar.vue";
 
 export default {
   data: function () {
@@ -40,8 +68,8 @@ export default {
       clickedPool: false,
       doubleClickedPools: false,
       activityOpen: true,
-      pool:{},
-    }
+      pool: {},
+    };
   },
   components: {
     navbar,
@@ -49,34 +77,36 @@ export default {
     AccountSidebar,
     PendingPools,
     PoolProfilePage,
-    PoolSidebar
+    PoolSidebar,
   },
   methods: {
-    onClicked: function(pool) {
+    onClicked: function (pool) {
       this.clickedPool = true;
       this.pool = pool;
     },
-    onDbClicked: function(pool) {
+    onDbClicked: function (pool) {
       this.doubleClickedPools = true;
       this.clickedPool = false;
       this.pool = pool;
     },
-    toggle: function() {
+    toggle: function () {
       if (this.activityOpen) {
         this.activityOpen = false;
-        document.getElementById("mainContainer").style.gridTemplateColumns = '1fr';
-        this.arrow = 'right-arrow-angle.png';
+        document.getElementById("mainContainer").style.gridTemplateColumns =
+          "1fr";
+        this.arrow = "right-arrow-angle.png";
       } else {
         this.activityOpen = true;
-        document.getElementById("mainContainer").style.gridTemplateColumns = '1fr 4fr';
-        this.arrow = 'left-arrow-angle.png';
+        document.getElementById("mainContainer").style.gridTemplateColumns =
+          "1fr 4fr";
+        this.arrow = "left-arrow-angle.png";
       }
     },
-    home: function() {
+    home: function () {
       this.doubleClickedPools = false;
       this.clickedPool = false;
-    }
-  }
+    },
+  },
 };
 </script>
 

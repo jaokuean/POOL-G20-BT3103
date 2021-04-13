@@ -6,10 +6,10 @@
       style="width: 30%; max-height: 30vh"
     />
     <div id="inputBox">
-      <div v-if="error" class="alert alert-danger">{{ error }}</div>
       <h3>SET NEW PASSWORD</h3>
+      <div v-if="error" id="pwdStrengthTxt">{{ error }}</div>
       <ul id="passwordHelp">
-        Password should contain:
+        Password Requirements
         <br />
         <li :class="has_minimum_lenth ? 'has_required' : ''">
           at least 8 characters
@@ -31,7 +31,6 @@
         placeholder="Password"
       />
 
-      <span id="pwdStrengthTxt">Password Strength:</span><br />
       <div id="strength" :class="'level_' + strengthLevel"></div>
       <br />
       <input
@@ -41,13 +40,15 @@
         v-model="password2"
         placeholder="Confirm Password"
       /><br />
-      {{ this.pwMessage }}
+
       <br />
       <input type="checkbox" @click="togglePwdVisible()" />
+
       <span style="color: white">Show/Hide Password</span>
       <br />
+      <br />
       <button type="submit" @click="submitPw()" class="submitBtn">
-        Submit
+        <span>Submit</span>
       </button>
     </div>
   </div>
@@ -63,8 +64,7 @@ export default {
       error: null,
       password: "",
       password2: "",
-      passwordType: "text",
-      pwMessage: "",
+      passwordType: "password",
       isValid: false,
       has_minimum_lenth: false,
       has_number: false,
@@ -80,21 +80,24 @@ export default {
     },
     checkPassword: function () {
       if (this.password1 === "" || this.password2 === "") {
-        this.pwMessage = "Please complete password confirmation";
+        this.error = "Please complete password confirmation.";
         this.isValid = false;
       } else if (this.password === this.password2) {
-        this.pwMessage = "Password Match";
-        this.isValid = true;
-        console.log("Match password");
+        if (this.scorePassword < 75) {
+          this.error = "Please fulfill password requirements.";
+          this.isValid = false;
+        } else {
+          this.isValid = true;
+        }
       } else {
-        this.pwMessage = "Password Does not Match";
+        this.error = "Password does not match";
         this.isValid = false;
       }
     },
     submitPw: function () {
       if (this.isValid) {
         console.log("USERDATA: " + this.user.data.uid);
-        this.$router.push({ name: "Home" });
+        this.$router.push("payment-setup");
       } else {
         this.checkPassword();
         console.log("invalid password");
@@ -130,6 +133,7 @@ export default {
     },
     strengthLevel() {
       let pass = this.scorePassword;
+      console.log(this.scorePassword);
       if (pass === 0) return 0;
       if (pass < 25) return 1;
       if (pass < 50) return 2;
@@ -232,23 +236,6 @@ p a {
   margin: 5px;
 }
 
-.submitBtn {
-  width: 50%;
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #000;
-  background-color: #f4f5f5;
-  border: none;
-  border-radius: 4px;
-  box-shadow: 0 1px #c5c5c5;
-  margin: 8px 0;
-}
-
 #strength {
   margin-top: 5px;
   margin-left: 25px;
@@ -284,11 +271,10 @@ p a {
   z-index: 11;
 }
 #pwdStrengthTxt {
-  color: white;
-  float: left;
-  margin-top: 5px;
-  margin-left: 25px;
-  font-size: 0.9em;
+  color: #bb4440;
+  margin: 10px 25px 10px 25px;
+  font-weight: bold;
+  text-align: left;
 }
 
 .has_required {
@@ -298,7 +284,7 @@ p a {
 #passwordHelp {
   color: white;
   float: left;
-  margin: 0 0 40px 0px;
+  margin: 10px 0 45px -11px;
 }
 
 #passwordHelp li {
@@ -306,5 +292,44 @@ p a {
   font-size: 0.8em;
   text-align: left;
   margin: 0px 0px -20px 15px;
+}
+
+button {
+  border-radius: 3px;
+  background-color: azure;
+  border: none;
+  text-align: center;
+  padding: 20px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px 5px 5px 5px;
+  text-transform: uppercase;
+}
+
+button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: #69bbe9;
+  font-weight: bold;
+}
+
+button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button:hover span {
+  padding-right: 25px;
+}
+
+button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 </style>

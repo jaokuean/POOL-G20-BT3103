@@ -54,6 +54,7 @@ p {
   font-size: 13px;
   color: white;
   font-weight: bold;
+  margin: 0 0 30px 0;
 }
 
 button {

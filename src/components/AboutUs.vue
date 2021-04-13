@@ -1,32 +1,59 @@
 <template>
   <div class="container">
     <navbar></navbar>
-      <p id="header"></p>
-      <img alt="pool logo" src="../assets/pool-logo.png" class="logo" id="logo" />
-    <div id='blurb'>
+    <div id="header">
+      <img
+        alt="pool logo"
+        src="../assets/pool-logo-name.png"
+        class="logo"
+        style="width: 30%; margin-top: 60px"
+      />
+      <h5>Manage your subs, POOL your resources</h5>
+    </div>
+    <div id="blurb">
       <p>Subscriptions are everywhere today. We want to help you manage them</p>
-      <p>Pooled subscriptions help you save time and money, allowing you to subscribe to more! </p>
-      <p>Pool streamlines the process of finding, sharing and managing your subscriptions, all on one platform! </p>
-      <p> Using Pool, you can manage all your payments, account details and shared subscription all on our site </p>
+      <p>
+        Pooled subscriptions help you save time and money, allowing you to
+        subscribe to more!
+      </p>
+      <p>
+        Pool streamlines the process of finding, sharing and managing your
+        subscriptions, all on one platform!
+      </p>
+      <p>
+        Using Pool, you can manage all your payments, account details and shared
+        subscription all on our site.
+      </p>
     </div>
     <div id="content">
       <div class="card">
-        <p class="card_head"> Subscribe With Friends </p>
-        <p class ="card_content"> You can create pools for yourself and your friends and family. No more awkwardly scrolling through group 
-        messages or late night texts to look for account login details </p>
+        <p class="card_head">Subscribe With Friends</p>
+        <p class="card_content">
+          You can create pools for yourself and your friends and family. No more
+          awkwardly scrolling through group messages or late night texts to look
+          for account login details
+        </p>
       </div>
       <div class="card">
-        <p class="card_head"> Save On Subscriptions </p>
-        <p class ="card_content"> The more the merrier! Split the cost with others so you don't need to pay as much! </p>
+        <p class="card_head">Save On Subscriptions</p>
+        <p class="card_content">
+          The more the merrier! Split the cost with others so you don't need to
+          pay as much!
+        </p>
       </div>
       <div class="card">
-        <p class="card_head"> Track your spending </p>
-        <p class="card_content"> Never forget how much you are spending, and what you are spending on. No need to dig through account statements to 
-        find what you are paying for! </p>
+        <p class="card_head">Track your spending</p>
+        <p class="card_content">
+          Never forget how much you are spending, and what you are spending on.
+          No need to dig through account statements to find what you are paying
+          for!
+        </p>
       </div>
     </div>
     <div id="contact">
-      <button onclick="location.href='mailto:bt3103.g20@gmail.com';"><span>Email Us</span></button>
+      <button onclick="location.href='mailto:bt3103.g20@gmail.com';">
+        <span>Email Us</span>
+      </button>
     </div>
   </div>
 </template>
@@ -43,25 +70,31 @@ export default {
   text-align: center;
   font-size: 35px;
 }
-
-
+#logoImg {
+  height: 9.5em;
+  width: 9.5em;
+  display: block;
+  border-radius: 25px;
+  margin-left: 20px;
+  filter: drop-shadow(5px 5px 5px #222);
+}
 #content {
   height: 350px;
   justify-content: center;
   align-content: center;
   display: flex;
   color: white;
-  
 }
 
 .card {
   width: 90%;
   margin: auto;
   text-align: center;
-  padding:0.5em;
-  background:#69BBE9;
+  padding: 0.5em;
+  background: #69bbe9;
   border-radius: 20px;
   margin: 20px;
+  height: 400px;
 }
 
 #logo {
@@ -69,11 +102,10 @@ export default {
   margin-left: auto;
   margin-right: auto;
   width: 25%;
-  
 }
 
 button {
-  border-radius: 15px;
+  border-radius: 3px;
   background-color: #69bbe9;
   border: none;
   color: black;
@@ -115,13 +147,14 @@ button:hover span:after {
 #contact {
   justify-content: center;
   text-align: center;
+  margin: 100px auto;
 }
 
 #blurb {
   justify-content: center;
   text-align: center;
   color: white;
-  background:#69BBE9;
+  background: #69bbe9;
   border-radius: 20px;
   padding: 20px;
   width: 95%;
