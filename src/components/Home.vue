@@ -1,53 +1,25 @@
 <template>
   <div>
-    <navbar />
-    <div id="mainContainer">
-      <activity-feed id="activityFeed" v-show="activityOpen" />
-      <div id="rightContainer">
-        <div id="mainCol">
+    <navbar/>
+    <div id='mainContainer'>
+      <activity-feed id='activityFeed' v-show="activityOpen"/>
+      <div id='rightContainer'>
+        <div id='mainCol'>
           <div id="topContainer">
-            <span id="toggleAF" title="Toggle ActivityFeed">
-              <img
-                class="arrowIcon"
-                src="../assets/left-arrow-angle.png"
-                v-show="activityOpen"
-                @click="toggle"
-              />
-              <img
-                class="arrowIcon"
-                src="../assets/right-arrow-angle.png"
-                v-show="!activityOpen"
-                @click="toggle"
-              />
+            <span id='toggleAF' title='Toggle ActivityFeed'>
+              <img class="arrowIcon" src="../assets/left-arrow-angle.png" v-show="activityOpen" @click="toggle"/>
+              <img class="arrowIcon" src="../assets/right-arrow-angle.png" v-show="!activityOpen" @click="toggle"/>
             </span>
-            <span id="back">
-              <img
-                title="Back to default dashboard"
-                id="homeIcon"
-                src="../assets/home.png"
-                @click="home"
-              />
+            <span id='back'>
+              <img title='Back to default dashboard' id="homeIcon" src="../assets/home.png" @click="home"/>
             </span>
           </div>
-<<<<<<< HEAD
           <pending-pools v-show='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
           <pool-profile-page v-bind:pool='pool' v-if="doubleClickedPools"/>
         </div>
         <div id='rightCol'>
           <account-sidebar v-show='!clickedPool'/>
           <pool-sidebar v-bind:pool="pool" v-if="clickedPool"/>
-=======
-          <pending-pools
-            v-if="!doubleClickedPools"
-            @clicked="onClicked"
-            @dbclicked="onDbClicked"
-          />
-          <pool-profile-page v-bind:pool="pool" v-else />
-        </div>
-        <div id="rightCol">
-          <account-sidebar v-if="!clickedPool" />
-          <pool-sidebar v-bind:pool="pool" v-else />
->>>>>>> b25d714e5d94b2a4582262592ceb688c4d041a96
         </div>
       </div>
     </div>
