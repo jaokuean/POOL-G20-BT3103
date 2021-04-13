@@ -328,6 +328,8 @@ export default {
     width: 90%;
     border-color: #222;
     border-radius: 2px;
+    resize: none;
+    font-size: 1em;
 }
 
 #commentBtnWrapper {

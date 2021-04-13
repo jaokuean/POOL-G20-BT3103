@@ -45,7 +45,6 @@ export default {
             feedsID: new Set(),
             popupTitle:"",
             popupContent:"",
-            create:false,
             loading:true,
         }
     },
@@ -63,9 +62,10 @@ export default {
                     this.loading = false;
                 }
                 querySnapShot.forEach((doc)=> {
-                    poolCount = poolCount + 1;
+                    
                     // Get the activity feeds using poolID
                     activities_ref.where("pool","==",doc.data().poolID).onSnapshot((querySnapShot) => {
+                        poolCount = poolCount + 1;
                         let numPoolFeeds = querySnapShot.size;
                         let poolFeedCount = 0;
                         if (poolCount == numPools && numPoolFeeds == 0) {
@@ -87,29 +87,24 @@ export default {
 
                             // Getting image of the service involved
                             database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
-                                if (docSnapShot.exists) {
-                                    database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
-                                        if (docSnapShot.exists) {
-                                            feedData['imgURL'] = docSnapShot.data().logo;
-                                        } else {
-                                            console.log("Services for this activity does not exist");
-                                        }
-                                        // For callback
-                                        if (numPoolFeeds == poolFeedCount && poolCount == numPools) {
-                                            this.callback();
-                                        }
-                                    }) 
-                                } else {
-                                    console.log("Pool for this activity does not exist");
-                                }
+                                database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
+                                    if (docSnapShot.exists) {
+                                        feedData['imgURL'] = docSnapShot.data().logo;
+                                    } else {
+                                        console.log("Services for this activity does not exist");
+                                    }
+                                    // Check if feeds already exists
+                                    if (!this.feedsID.has(doc.id)) {
+                                        // Feed does not exist, add to feeds
+                                        this.feeds.unshift(feedData);
+                                        this.feedsID.add(doc.id);
+                                    }
+                                    // For callback
+                                    if (numPoolFeeds == poolFeedCount && poolCount == numPools) {
+                                        this.callback();
+                                    }
+                                })
                             })
- 
-                            // Check if feeds already exists
-                            if (!this.feedsID.has(doc.id)) {
-                                // Feed does not exist, add to feeds
-                                this.feeds.push(feedData);
-                                this.feedsID.add(doc.id);
-                            }
                         });
                     })
                 });

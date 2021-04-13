@@ -152,7 +152,7 @@ export default {
 
 .userDetailText {
     color: grey;
-    font-size: 1em;
+    font-size: 1vw;
 }
 
 #monthlyspendings {

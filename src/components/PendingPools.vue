@@ -6,7 +6,7 @@
             <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <ul>
                 <li v-for="pendingPool in pendingPools" :key="pendingPool.index">
-                    <img class='pendingPoolImage' v-bind:src="pendingPool.logo"/>
+                    <img class='poolImage' v-bind:src="pendingPool.logo"/>
                     <a>{{pendingPool.poolName}}<br>Members: {{pendingPool.fill}}</a>
                 </li>
             </ul>
@@ -127,10 +127,6 @@ export default {
     color: white;
 }
 
-.pendingPoolImage {
-    margin: auto;
-}
-
 .msg {
     margin-left: 4rem;
     padding-bottom: 1em;
@@ -147,6 +143,10 @@ export default {
 
 .poolImage {
     margin: auto;
+    height: 4em;
+    width: 4em;
+    display: block;
+    border-radius: 10%;
 }
 
 h2 {
@@ -164,20 +164,6 @@ li {
     text-align: center;
     margin: 1rem;
     margin-top: 0;
-}
-
-#pendingPoolsContainer img {
-    height: 4em;
-    width: 4em;
-    display: block;
-    border-radius: 10%;
-}
-
-#myPoolsContainer img {
-    height: 4em;
-    width: 4em;
-    display: block;
-    border-radius: 50%;
 }
 
 #poolName {
