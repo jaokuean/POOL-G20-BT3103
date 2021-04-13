@@ -54,6 +54,9 @@ export default {
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
                 const size = querySnapShot.size;
                 let count = 0;
+                if (size == 0) {
+                    this.loading = false;
+                }
                 querySnapShot.forEach((doc)=> {
                     // Gets the pool using poolID
                     const poolID = doc.data().poolID;

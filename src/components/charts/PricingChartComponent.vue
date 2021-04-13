@@ -1,6 +1,6 @@
 <template>
     <div style="text-align:center">
-        <h2 style="text-align:center">Prices ordered</h2>
+        <h2 style="text-align:center">Prices of services ordered</h2>
         <pricing-chart v-bind:category="category"></pricing-chart>
 
         <div style="padding:1em">

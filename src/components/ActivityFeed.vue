@@ -57,57 +57,64 @@ export default {
             const activities_ref = database.firestore().collection('activities');
             //Gets pools of user
             poolgroups_ref.where("userID","==",uid).get().then((querySnapShot) => {
+                const numPools = querySnapShot.size;
+                let poolCount = 0;
+                if (numPools == 0) {
+                    this.loading = false;
+                }
                 querySnapShot.forEach((doc)=> {
+                    poolCount = poolCount + 1;
                     // Get the activity feeds using poolID
                     activities_ref.where("pool","==",doc.data().poolID).onSnapshot((querySnapShot) => {
-                        let querySize = querySnapShot.size;
-                        let count = 0;
+                        let numPoolFeeds = querySnapShot.size;
+                        let poolFeedCount = 0;
+                        if (poolCount == numPools && numPoolFeeds == 0) {
+                            this.loading = false;
+                        }
+
                         querySnapShot.forEach((doc) => {
+                            // For callback
+                            poolFeedCount = poolFeedCount + 1;
+
                             let feedData = doc.data();
                             feedData['date'] = feedData.dateCreated.toDate();
-                            console.log(doc.id); // Debugging
-                            // Getting image of the service involved
-                            database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
-                                if (docSnapShot.exists) {
-                                    database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
-                                        if (docSnapShot.exists) {
-                                            feedData['imgURL'] = docSnapShot.data().logo;
-                                            // For callback
-                                            if (querySize == count) {
-                                                this.callback();
-                                            }
-                                        } else {
-                                            console.log("Services for this activity does not exist");
-                                            // For callback
-                                            if (querySize == count) {
-                                                this.callback();
-                                            }
-                                        }
-                                    }) 
-                                } else {
-                                    console.log("Pool for this activity does not exist");
-                                }
-                            })
-
                             // Create short message
                             if (feedData.content.length > 76) {
                                 feedData.shortContent = feedData.content.slice(0,76) + '...';
                             } else {
                                 feedData.shortContent = feedData.content;
                             }
-                            
+
+                            // Getting image of the service involved
+                            database.firestore().collection('pools').doc(feedData.pool).get().then((docSnapShot) => {
+                                if (docSnapShot.exists) {
+                                    database.firestore().collection('services').doc(docSnapShot.data().serviceId).get().then((docSnapShot) => {
+                                        if (docSnapShot.exists) {
+                                            feedData['imgURL'] = docSnapShot.data().logo;
+                                        } else {
+                                            console.log("Services for this activity does not exist");
+                                        }
+                                        // For callback
+                                        if (numPoolFeeds == poolFeedCount && poolCount == numPools) {
+                                            this.callback();
+                                        }
+                                    }) 
+                                } else {
+                                    console.log("Pool for this activity does not exist");
+                                }
+                            })
+ 
                             // Check if feeds already exists
                             if (!this.feedsID.has(doc.id)) {
                                 // Feed does not exist, add to feeds
                                 this.feeds.push(feedData);
                                 this.feedsID.add(doc.id);
                             }
-
-                            // For callback
-                            count = count + 1;
                         });
                     })
                 });
+            }).then(() => {
+
             })
         },
         callback: function() {

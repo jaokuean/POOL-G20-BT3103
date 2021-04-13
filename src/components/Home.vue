@@ -15,11 +15,11 @@
             </span>
           </div>
           <pending-pools v-show='!doubleClickedPools' @clicked='onClicked' @dbclicked='onDbClicked'/>
-          <pool-profile-page v-bind:pool='pool' v-show="doubleClickedPools"/>
+          <pool-profile-page v-bind:pool='pool' v-if="doubleClickedPools"/>
         </div>
         <div id='rightCol'>
           <account-sidebar v-show='!clickedPool'/>
-          <pool-sidebar v-bind:pool="pool" v-show="clickedPool"/>
+          <pool-sidebar v-bind:pool="pool" v-if="clickedPool"/>
         </div>
       </div>
     </div>
