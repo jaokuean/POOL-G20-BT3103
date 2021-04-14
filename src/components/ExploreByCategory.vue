@@ -125,12 +125,9 @@ export default {
       }
       var items = this.services;
       var result = {};
-      // console.log(this.services);
       Object.keys(items).forEach((key) => {
         const item = items[key];
-        //console.log(item.category);
         if (item.category === this.currentFilter) {
-          console.log(item.category);
           result[key] = item;
         }
       });

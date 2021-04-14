@@ -37,24 +37,56 @@
               </ul>
             </div>
           </div>
-          <div id="bottomContainer">
+          <div id="bottomContainer" v-if="!isEmpty">
             <br />
-            <h1>List of Pool Groups</h1>
+            <h1>
+              List of Pool Groups
+              <button class="startPoolBtn" @click="createPool">
+                <span>Start a Pool</span>
+              </button>
+            </h1>
+
             <div id="poolContent" v-for="pool in poolGroups" :key="pool">
               <ul>
                 <li>
                   <span id="poolHead">{{ pool.name }}</span>
                 </li>
                 <li>
-                  <span id="poolQty">{{ pool.remaining }}</span>
+                  <span id="poolQty"
+                    >{{ pool.remaining }}
+                    <img
+                      class="subIcon"
+                      alt="Sub Icon"
+                      src="../assets/subs2.png"
+                  /></span>
                 </li>
-                <li>
-                  <button @click="joinPool">
+                <li v-if="pool.isJoined" ||>
+                  <button class="leaveBtn" @click="leavePool">
+                    <span>Joined</span>
+                  </button>
+                </li>
+                <li v-else-if="pool.remaining != 0">
+                  <button class="joinBtn" @click="joinPool">
                     <span>Join Pool</span>
+                  </button>
+                </li>
+
+                <li v-else>
+                  <button class="notifyBtn" @click="notifyMe">
+                    <span>Notify Me</span>
                   </button>
                 </li>
               </ul>
             </div>
+          </div>
+          <div id="bottomContainer" v-else>
+            <br />
+            <h1>List of Pool Groups</h1>
+            <ul id="noPools">
+              <li>
+                <span id="noPools">Empty Pool</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -65,6 +97,7 @@
 import ActivityFeed from "./ActivityFeed.vue";
 import navbar from "./NavBar";
 import database from "../firebase";
+import { mapGetters } from "vuex";
 
 export default {
   components: { ActivityFeed, navbar },
@@ -79,10 +112,23 @@ export default {
     };
   },
   methods: {
-    joinPool: function () {},
+    createPool: function () {
+      this.$router.push({
+        name: "CreatePoolGroup",
+        params: { sname: this.servName },
+      });
+    },
+    joinPool: function () {
+      alert("Joined " + this.servName);
+    },
+    notifyMe: function () {
+      alert("You will be notified when there is an open subscription.");
+    },
     fetchData: function () {
       const services_ref = database.firestore().collection("services");
       var poolRef = database.firestore().collection("pools");
+      const poolGroup_ref = database.firestore().collection("poolgroups");
+
       services_ref
         .where("serviceName", "==", this.servName)
         .get()
@@ -104,16 +150,22 @@ export default {
               .get()
               .then((querySnapShot) => {
                 querySnapShot.forEach((doc) => {
-                  console.log(
-                    doc.data().serviceId,
-                    " => ",
-                    doc.data().remaining
-                  );
+                  var isJoin = false;
+                  poolGroup_ref
+                    .where("userID", "==", this.user.data.uid)
+                    .get()
+                    .then((poolGroupSnapshot) => {
+                      poolGroupSnapshot.forEach((poolGroup) => {
+                        if (poolGroup.poolID === doc.id) isJoin = true;
+                      });
+                    });
+                  console.log("check boolean : " + isJoin);
                   this.poolGroups.push({
                     id: doc.id,
                     remaining: doc.data().remaining,
                     sid: doc.data().serviceId,
                     name: doc.data().poolName,
+                    isJoined: isJoin,
                   });
                   //console.log(this.pools);
                 });
@@ -146,6 +198,15 @@ export default {
     if (this.$route.params.sname == null) this.servName = "The Economist";
     this.fetchData();
   },
+  computed: {
+    ...mapGetters({
+      // map `this.user` to `this.$store.getters.user`
+      user: "user",
+    }),
+    isEmpty: function () {
+      return this.poolGroups.length == 0;
+    },
+  },
 };
 </script>
 
@@ -157,7 +218,12 @@ export default {
   cursor: pointer;
   margin-left: 0.5em;
 }
-
+.subIcon {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  bottom: 2px;
+}
 #mainContainer {
   display: grid;
   grid-template-columns: 1fr 4fr;
@@ -227,18 +293,37 @@ export default {
   margin-left: 20px;
   filter: drop-shadow(5px 5px 5px #222);
 }
-
+.joinBtn {
+  background-color: #203647;
+}
+.notifyBtn {
+  background-color: red;
+}
+.startPoolBtn {
+  background-color: #203647;
+  position: absolute;
+  height: 40px;
+  width: 160px;
+  padding: 5px;
+  margin: 0px 10px 0px 80px;
+  border-radius: 25px;
+}
+.startPoolBtn span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: white;
+}
 button {
   border-radius: 3px;
-  background-color: #fff;
   border: none;
   text-align: center;
   transition: all 0.5s;
   cursor: pointer;
-  width: 100%;
-  height: 100%;
-  margin-left: 15px;
-  padding-left: 15px;
+  width: 150px;
+  height: 80%;
+  margin: 2% 0 0 50px;
 }
 
 button span {
@@ -246,12 +331,12 @@ button span {
   display: inline-block;
   position: relative;
   transition: 0.5s;
-  color: black;
+  color: white;
 }
 
 button span:after {
   content: "\00bb";
-  position: absolute;
+  position: relative;
   opacity: 0;
   top: 0;
   right: -20px;
@@ -265,34 +350,46 @@ button:hover span {
 
 button:hover span:after {
   opacity: 1;
-  right: 0;
+  right: 5;
 }
 
 #poolContent ul {
   display: flex;
-  float: left;
+  background-color: white;
+  border-radius: 10px;
+  width: 85%;
+  margin: 30px 0 0 40px;
 }
 
 #poolContent ul li {
+  float: left;
+  width: 240px;
   position: relative;
   display: block;
-  background-color: #203647;
+  padding: 5px;
 }
 
 #poolContent ul li span {
   display: block;
-  color: black;
-  text-align: left;
   text-decoration: none;
-  text-transform: uppercase;
-  margin: 20px 20px 20px 20px;
 }
 #poolContent ul li #poolHead {
-  width: 350px;
   font-weight: bold;
-  font-size: 1.3em;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  padding: 10px;
 }
 #poolContent ul li #poolQty {
-  font-size: 1.3em;
+  text-align: right;
+  font-size: 1.1em;
+  padding: 10px;
+}
+ul li #noPool {
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  padding: 10px;
 }
 </style>

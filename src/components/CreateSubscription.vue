@@ -5,24 +5,6 @@
       <activity-feed id="activityFeed" v-show="activityOpen" />
       <div id="rightContainer">
         <div id="mainCol">
-          <div id="topContainer">
-            <span id="toggleAF" title="Toggle ActivityFeed">
-              <img
-                class="arrowIcon"
-                alt="arrow Icon"
-                src="../assets/left-arrow-angle.png"
-                v-show="activityOpen"
-                @click="toggle"
-              />
-              <img
-                class="arrowIcon"
-                alt="arrow Icon"
-                src="../assets/right-arrow-angle.png"
-                v-show="!activityOpen"
-                @click="toggle"
-              />
-            </span>
-          </div>
           <h2>
             The following are auto-generated details of your group.
             <br />
@@ -60,7 +42,6 @@ export default {
   },
   data() {
     return {
-      activityOpen: true,
       datapacket: {},
       dateCreated: database.firestore.FieldValue.serverTimestamp(),
       maxSize: 0,
@@ -72,19 +53,6 @@ export default {
     };
   },
   methods: {
-    toggle: function () {
-      if (this.activityOpen) {
-        this.activityOpen = false;
-        document.getElementById("mainContainer").style.gridTemplateColumns =
-          "1fr";
-        this.arrow = "right-arrow-angle.png";
-      } else {
-        this.activityOpen = true;
-        document.getElementById("mainContainer").style.gridTemplateColumns =
-          "1fr 4fr";
-        this.arrow = "left-arrow-angle.png";
-      }
-    },
     fetchItems: function () {
       this.dateCreated = database.firestore.FieldValue.serverTimestamp();
       this.maxSize = Math.floor(Math.random() * 4 + 1);
@@ -143,14 +111,6 @@ export default {
 </script>
 
 <style scoped>
-.arrowIcon {
-  width: 1.5em;
-  height: 1.5em;
-  display: flex;
-  cursor: pointer;
-  margin-left: 0.5em;
-}
-
 #mainContainer {
   display: grid;
   grid-template-columns: 1fr 4fr;

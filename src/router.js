@@ -16,6 +16,9 @@ import Statistics from '@/components/Statistics';
 import CreateSubscription from '@/components/CreateSubscription';
 import Logout from '@/components/Logout';
 import PaymentSetup from '@/components/PaymentSetup';
+import CreatePoolGroup from '@/components/CreatePoolGroup';
+
+
 Vue.use(Router);
 
 const router = new Router({
@@ -125,6 +128,13 @@ const router = new Router({
             path: '/payment-setup',
             name: PaymentSetup,
             component: PaymentSetup,
+        }, {
+            path: '/create-pool',
+            name: 'CreatePoolGroup',
+            component: CreatePoolGroup,
+            meta: {
+                requiresAuth: true
+            }
         },
 
     ]

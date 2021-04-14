@@ -23,7 +23,7 @@
         :key="serv"
       >
         <ul>
-          <li @click="goToPool">
+          <li @click="goToPool($event)">
             <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
             <span>
               <p class="serviceNames">{{ serv.name }}</p>
@@ -85,9 +85,15 @@ export default {
     this.tabulateTrends();
   },
   methods: {
-    goToPool: function () {
+    goToPool: function (event) {
       if (this.user.loggedIn) {
-        this.$router.push("search-service");
+        //this.$router.push("pool-groups");
+        this.selectedName = event.target.innerHTML;
+
+        this.$router.push({
+          name: "PoolGroups",
+          params: { sname: this.selectedName },
+        });
       } else {
         this.$router.push("login");
       }
