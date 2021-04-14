@@ -4,6 +4,9 @@
             <img v-bind:src = "pool.logo" id = "servicePic" >
             <h1> {{pool.serviceName}} (${{pool.fee}}/mo)</h1>
         </div>
+        <div id='leavePoolContainer'>
+            <button id='leavePoolBtn' type="button" @click="confirmLeave" title="Leave this pool">Leave Pool</button>
+        </div>
         <div id='members'>
             <ul>
                 <li v-for="member in members" :key="member.index">
@@ -169,6 +172,53 @@ export default {
                 this.pwBtnTxt = 'Hide password';
             }
             this.show = !this.show;
+        },
+        confirmLeave: function() {
+            let check = confirm("Are you sure you want to leave this group?");
+            if (check) {
+                database.firestore().collection('pools').doc(this.pool.poolID).get().then(doc => {
+                    const poolData = doc.data();
+                    if (poolData.maxSize == poolData.remaining) {
+                        this.deletePool();
+                    } else {
+                        this.leavePool(poolData.remaining);
+                    }
+                })
+            }
+        },
+        deletePool: function() {
+            const poolgrps_ref = database.firestore().collection('poolgroups');
+            const pools_ref = database.firestore().collection('pools');
+            poolgrps_ref.doc(this.pool.poolgrpID).delete().then(() => {
+                pools_ref.doc(this.pool.poolID).delete().then(() => {
+                    window.location.reload();
+                    alert('Left group');
+                })
+            })
+        },
+        leavePool: function(remain) {
+            const poolgrps_ref = database.firestore().collection('poolgroups');
+            const pools_ref = database.firestore().collection('pools');
+            const activity_ref = database.firestore().collection('activities');
+            
+            //Create feed object for member leaving
+            let feed = {};
+            feed['content'] = this.$store.getters.user.data.displayName + ' left the pool';
+            feed['title'] = "***Pool Notice***";
+            feed['user'] = '';
+            feed['pool'] = this.pool.poolID;
+            feed['dateCreated'] = database.firestore.Timestamp.fromDate(new Date());
+            
+            poolgrps_ref.doc(this.pool.poolgrpID).delete().then(() => {
+                pools_ref.doc(this.pool.poolID).update({
+                    remaining: remain + 1
+                }).then(() => {
+                    activity_ref.add(feed).then(() => {
+                        window.location.reload();
+                        alert('Left group');
+                    })
+                })
+            })
         }
     },
     created() {
@@ -196,6 +246,25 @@ export default {
     width: 6em;
     height: 6em;
     margin-right: 10px;
+}
+
+#leavePoolContainer {
+    text-align: end;
+}
+
+#leavePoolBtn {
+    font-size: 1vw;
+    background: rgb(255, 73, 73);
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    border: white;
+    box-shadow: 0 2px 4px 0 rgba(117, 117, 117, 0.2), 0 3px 10px 0 rgba(117, 117, 117, 0.19);
+    cursor: pointer;
+}
+
+#leavePoolBtn:hover {
+    background: rgb(209, 125, 125);
 }
 
 #members {
