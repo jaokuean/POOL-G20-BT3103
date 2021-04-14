@@ -55,17 +55,17 @@
 <script>
 import database from "../firebase.js";
 import navbar from "./NavBar.vue";
-
 export default {
   components: {
     navbar,
   },
   data() {
     return {
+      uid: this.$store.getters.user.data.uid,
+      sid: this.$route.params.sid,
       errors: [],
       service: [],
       servName: this.$route.params.sname,
-      datapacket: {},
       dateCreated: database.firestore.FieldValue.serverTimestamp(),
       maxSize: "",
       poolName: "",
@@ -73,6 +73,8 @@ export default {
       serviceName: this.$route.params.document_id,
       sharedPassword: "",
       sharedUserName: "",
+      pool: {},
+      userpool: {},
     };
   },
   methods: {
@@ -82,59 +84,51 @@ export default {
         params: { sname: this.servName },
       });
     },
-    createGroup: function () {
+    createGroup: async function () {
       if (this.checkForm()) {
-        const services_ref = database.firestore().collection("services");
-
-        let items = {};
-        services_ref
-          .where("serviceName", "==", this.servName)
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              items["serviceId"] = doc.id;
-              items["dateCreated"] = this.dateCreated;
-              items["maxSize"] = Number(this.maxSize);
-              items["poolName"] = this.poolName;
-              items["remaining"] = this.maxSize - 1;
-              //items["serviceId"] = this.serviceId;
-              //serviceId seems not properly set up using props
-              items["sharedPassword"] = this.sharedPassword;
-              items["sharedUserName"] = this.sharedUserName;
-              this.datapacket = items;
-              database.firestore().collection("pools").add(this.datapacket);
-
-              let userpool = {};
-              userpool[
-                "startDate"
-              ] = database.firestore.FieldValue.serverTimestamp();
-              var currentDate = new Date();
-              userpool[
-                "endDate"
-              ] = database.firestore.FieldValue.serverTimestamp();
-              userpool["nextPaymentDue"] = new Date(
-                currentDate.setMonth(currentDate.getMonth() + 1)
-              );
-              console.log(userpool.nextPaymentDue);
-              userpool["poolID"] = items.serviceId;
-              const uid = this.$store.getters.user.data.uid;
-              userpool["userID"] = uid;
-              console.log(userpool);
-              database
-                .firestore()
-                .collection("poolgroups")
-                .add(userpool)
-                .then(
-                  alert(
-                    "You've successfully created a group!\n The pool's name is: " +
-                      this.datapacket.poolName +
-                      ".\n Wait for others to join the pool!"
-                  )
-                );
-            });
+        this.pool["serviceId"] = this.sid;
+        this.pool["dateCreated"] = this.dateCreated;
+        this.pool["maxSize"] = Number(this.maxSize);
+        this.pool["poolName"] = this.poolName;
+        this.pool["remaining"] = this.maxSize - 1;
+        this.pool["sharedPassword"] = this.sharedPassword;
+        this.pool["sharedUserName"] = this.sharedUserName;
+        console.log(this.pool);
+        var docRef = await database
+          .firestore()
+          .collection("pools")
+          .add(this.pool);
+        console.log("docid: " + docRef.id);
+        this.userpool["poolID"] = docRef.id;
+        this.userpool[
+          "startDate"
+        ] = database.firestore.FieldValue.serverTimestamp();
+        var currentDate = new Date();
+        this.userpool[
+          "endDate"
+        ] = database.firestore.FieldValue.serverTimestamp();
+        this.userpool["nextPaymentDue"] = new Date(
+          currentDate.setMonth(currentDate.getMonth() + 1)
+        );
+        this.userpool["userID"] = this.uid;
+        console.log(this.userpool);
+        database
+          .firestore()
+          .collection("poolgroups")
+          .add(this.userpool)
+          .then(
+            alert(
+              "You've successfully created a group!\n" +
+                ".\n Wait for others to join the pool!"
+            )
+          )
+          .catch((error) => {
+            console.log("Error getting documents: ", error);
           });
-
-        this.$router.push("pool-groups");
+        this.$router.push({
+          name: "PoolGroups",
+          params: { sname: this.servName },
+        });
       } else {
         return;
       }
@@ -210,8 +204,8 @@ export default {
       //this.sharedUserName =
       //Math.random().toString(16).substr(2, 8) + "@gmail.com";
     },
-    joinGroup: function () {},
   },
+
   created() {
     this.fetchService();
     this.fetchItems();

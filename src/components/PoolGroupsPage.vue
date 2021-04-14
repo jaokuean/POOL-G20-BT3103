@@ -115,7 +115,7 @@ export default {
     createPool: function () {
       this.$router.push({
         name: "CreatePoolGroup",
-        params: { sname: this.servName },
+        params: { sname: this.servName, sid: this.sid },
       });
     },
     joinPool: function () {
@@ -133,14 +133,14 @@ export default {
         .where("serviceName", "==", this.servName)
         .get()
         .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            this.sid = doc.id;
+          querySnapshot.forEach((service) => {
+            this.sid = service.id;
             this.services.push({
-              id: doc.id,
-              name: doc.data().serviceName,
-              score: doc.data().score,
-              logo: doc.data().logo,
-              category: doc.data().category,
+              id: service.id,
+              name: service.data().serviceName,
+              score: service.data().score,
+              logo: service.data().logo,
+              category: service.data().category,
             });
             //console.log("FIND THIS: " + this.sid);
             //console.log(doc.id, " => ", doc.data());
@@ -163,7 +163,7 @@ export default {
                   this.poolGroups.push({
                     id: doc.id,
                     remaining: doc.data().remaining,
-                    sid: doc.data().serviceId,
+                    sid: service.data().serviceId,
                     name: doc.data().poolName,
                     isJoined: isJoin,
                   });
