@@ -60,9 +60,11 @@ export default {
                 querySnapShot.forEach((doc)=> {
                     // Gets the pool using poolID
                     const poolID = doc.data().poolID;
+                    const poolgrpID = doc.id;
                     pools_ref.doc(poolID).get().then((doc) => {
-                        const pool = doc.data();    
+                        let pool = doc.data();
                         pool['poolID'] = poolID;
+                        pool['poolgrpID'] = poolgrpID;
                         // Gets the service that is provided in the pool
                         services_ref.doc(pool.serviceId).get().then((doc) => {
                             const service = doc.data();
