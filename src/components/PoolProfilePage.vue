@@ -2,7 +2,10 @@
     <div id='mainComponent'>
         <div id="header">
             <img v-bind:src = "pool.logo" id = "servicePic" >
-            <h1> {{pool.serviceName}} (${{pool.fee}}/mo)</h1>
+            <div>
+                <h1> {{pool.poolName}}</h1><br>
+                <a>{{pool.serviceName}} (${{pool.fee}}/mo)</a>
+            </div>
         </div>
         <div id='leavePoolContainer'>
             <button id='leavePoolBtn' type="button" @click="confirmLeave" title="Leave this pool">Leave Pool</button>
@@ -178,7 +181,7 @@ export default {
             if (check) {
                 database.firestore().collection('pools').doc(this.pool.poolID).get().then(doc => {
                     const poolData = doc.data();
-                    if (poolData.maxSize == poolData.remaining) {
+                    if (poolData.maxSize == poolData.remaining + 1) {
                         this.deletePool();
                     } else {
                         this.leavePool(poolData.remaining);
@@ -189,6 +192,10 @@ export default {
         deletePool: function() {
             const poolgrps_ref = database.firestore().collection('poolgroups');
             const pools_ref = database.firestore().collection('pools');
+            const services_ref = database.firestore().collection('services');
+            services_ref.doc(this.pool.serviceId).update({
+                    score: database.firestore.FieldValue.increment(-1)
+            })
             poolgrps_ref.doc(this.pool.poolgrpID).delete().then(() => {
                 pools_ref.doc(this.pool.poolID).delete().then(() => {
                     window.location.reload();
@@ -200,7 +207,8 @@ export default {
             const poolgrps_ref = database.firestore().collection('poolgroups');
             const pools_ref = database.firestore().collection('pools');
             const activity_ref = database.firestore().collection('activities');
-            
+            const services_ref = database.firestore().collection('services');
+
             //Create feed object for member leaving
             let feed = {};
             feed['content'] = this.$store.getters.user.data.displayName + ' left the pool';
@@ -209,6 +217,9 @@ export default {
             feed['pool'] = this.pool.poolID;
             feed['dateCreated'] = database.firestore.Timestamp.fromDate(new Date());
             
+            services_ref.doc(this.pool.serviceId).update({
+                    score: database.firestore.FieldValue.increment(-1)
+            });
             poolgrps_ref.doc(this.pool.poolgrpID).delete().then(() => {
                 pools_ref.doc(this.pool.poolID).update({
                     remaining: remain + 1
@@ -230,7 +241,6 @@ export default {
 <style scoped>
 #mainComponent {
     width: 90%;
-    font-family: Monaco, sans-serif;
 }
 
 #header {
@@ -239,6 +249,14 @@ export default {
     margin-left: 4em;
     margin-top: 10px;
     width: 100%;
+}
+
+#header h1 {
+    display: inline;
+}
+
+#header a {
+    color: #05598a;
 }
 
 #servicePic {

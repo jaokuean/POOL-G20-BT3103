@@ -2,7 +2,7 @@
     <div class="card">
         <div v-show="!loading">
             <img v-bind:src = "user.profilePhoto" id="profilePic"/>
-            <h1>{{user.name}}</h1>
+            <h2>{{user.name}}</h2>
             <div class='userDetailDiv'>
                 <img src = "../assets/email.png" class = "icon"/>
                 <a class="userDetailText" >{{user.email}}</a>
@@ -14,8 +14,8 @@
             <h3>Monthly Spendings</h3>
             <p id = "monthlyspendings" >${{spending}}</p>
             <h3>Next Payment Date:</h3>
-            <a>{{nextPaymentDate}}</a>
-            <a v-if="paymentPool.length > 0"> for {{paymentPool}} (${{paymentAmount}})</a>
+            <a class='paymentText'>{{nextPaymentDate}}</a>
+            <a class='paymentText' v-if="paymentPool.length > 0"> for {{paymentPool}} (${{paymentAmount}})</a>
             <p><button @click="toProfile">Edit Profile</button></p>
             <p><button @click="toStatistics">View Statistics</button></p>
         </div>
@@ -53,7 +53,6 @@ export default {
                 // For callback
                 let count = 0;
                 const querySize = querySnapShot.size;
-                console.log(querySize);
                 if (querySize == 0) {
                     this.loading = false;
                 }
@@ -82,13 +81,11 @@ export default {
                                 this.nextPaymentDate = paymentDate;
                                 this.paymentPool = pool.poolName;
                                 this.paymentAmount = fee;
-                                console.log(fee)
                             } else {
                                 if (paymentDate >= currentDate && paymentDate <= this.nextPaymentDate) {
                                     this.nextPaymentDate = paymentDate;
                                     this.paymentPool = pool.poolName;
                                     this.paymentAmount = fee;
-                                    console.log(fee)
                                 }
                             }
 
@@ -104,6 +101,7 @@ export default {
         },
         callback: function() {
             this.spending = this.spending.toFixed(2);
+            this.paymentAmount = this.paymentAmount.toFixed(2);
             this.nextPaymentDate = this.nextPaymentDate.toISOString().split('T')[0];
             this.loading = false;
         },
@@ -161,6 +159,10 @@ export default {
     margin: auto;
     border-radius: 1em;
     display: inline-block;
+}
+
+.paymentText {
+    font-size: 1vw;
 }
 
 button {

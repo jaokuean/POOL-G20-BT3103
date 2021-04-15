@@ -19,7 +19,7 @@
                         </fieldset>
                         <fieldset>
                             <label>Profile Photo:</label>
-                            <input placeholder="Username" v-model="profilePhotoUpdated" type="text" tabindex="1" required autofocus>
+                            <input placeholder="Photo url" v-model="profilePhotoUpdated" type="text" tabindex="1" required autofocus>
                         </fieldset>
                         <fieldset>
                             <label>Phone number:</label>
