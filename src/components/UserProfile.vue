@@ -1,57 +1,57 @@
 <template>
-  <div>
-      <navbar></navbar>
-      <div class="mainContainer">
-          <h1>Edit Profile</h1>
-          
-          <div id="contact">
-              <div id='topContainer'>
-                  <img v-bind:src = "profilePhoto" id="profilePic"/>
-                  <h2>{{userName}}</h2>
-                  <a class="userDetailText">{{email}}</a>
-              </div>
-              <div id="formsContainer">
-                  <form id='userInfoForm'>
-                      <h3>User Information</h3>
-                      <fieldset>
-                          <label>Username:</label>
-                          <input placeholder="Username" v-model="userNameUpdated" type="text" tabindex="1" required autofocus>
-                      </fieldset>
-                      <fieldset>
-                          <label>Profile Photo:</label>
-                          <input placeholder="Photo url" v-model="profilePhotoUpdated" type="text" tabindex="1" required autofocus>
-                      </fieldset>
-                      <fieldset>
-                          <label>Phone number:</label>
-                          <input placeholder="Your phone number" v-model="phoneNumber" type="tel" tabindex="3" required>
-                      </fieldset>
-                      <fieldset>
-                          <button name="update" type="button" id="updateBtn" @click="updateUser">Update User</button>
-                      </fieldset>
-                  </form>
-                  <div class="vl"></div>
-                  <form id='cardInfoForm'>
-                      <h3>Card Details</h3>
-                      <fieldset>
-                          <label>Card name:</label>
-                          <input placeholder="Your card name" v-model="cardName" type="text" tabindex="3" required>
-                      </fieldset>
-                      <fieldset>
-                          <label>Card number:</label>
-                          <input placeholder="Your card number" v-model="cardNumber" type="tel" tabindex="3" required>
-                      </fieldset>
-                      <fieldset>
-                          <label>CVC:</label>
-                          <input placeholder="Your card cvc" v-model="cvc" type="tel" tabindex="3" required>
-                      </fieldset>
-                      <fieldset>
-                          <button name="update" type="button" id="updateBtn" @click="updateCard">Update Card Details</button>
-                      </fieldset>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
+    <div>
+        <navbar></navbar>
+        <div class="mainContainer">
+            <h1>Edit Profile</h1>
+            
+            <div id="contact">
+                <div id='topContainer'>
+                    <img v-bind:src = "profilePhoto" id="profilePic"/>
+                    <h2>{{userName}}</h2>
+                    <a class="userDetailText">{{email}}</a>
+                </div>
+                <div id="formsContainer">
+                    <form id='userInfoForm'>
+                        <h3>User Information</h3>
+                        <fieldset>
+                            <label>Username:</label>
+                            <input placeholder="Username" v-model="userNameUpdated" type="text" tabindex="1" required autofocus>
+                        </fieldset>
+                        <fieldset>
+                            <label>Profile Photo:</label>
+                            <input placeholder="Photo url" v-model="profilePhotoUpdated" type="text" tabindex="1" required autofocus>
+                        </fieldset>
+                        <fieldset>
+                            <label>Phone number:</label>
+                            <input placeholder="Your phone number" v-model="phoneNumber" type="tel" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <button name="update" type="button" id="updateBtn" @click="updateUser">Update User</button>
+                        </fieldset>
+                    </form>
+                    <div class="vl"></div>
+                    <form id='cardInfoForm'>
+                        <h3>Card Details</h3>
+                        <fieldset>
+                            <label>Card name:</label>
+                            <input placeholder="Your card name" v-model="cardName" type="text" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <label>Card number:</label>
+                            <input placeholder="Your card number" v-model="cardNumber" type="tel" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <label>CVC:</label>
+                            <input placeholder="Your card cvc" v-model="cvc" type="tel" tabindex="3" required>
+                        </fieldset>
+                        <fieldset>
+                            <button name="update" type="button" id="updateBtn" @click="updateCard">Update Card Details</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
