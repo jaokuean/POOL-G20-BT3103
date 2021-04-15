@@ -25,7 +25,7 @@
             </span>
           </div>
           <div>
-            <div id="serviceContent" v-for="serv in services" :key="serv">
+            <div id="serviceContent" v-for="serv in services" :key="serv.index">
               <ul>
                 <li>
                   <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
@@ -46,7 +46,7 @@
               </button>
             </h1>
 
-            <div id="poolContent" v-for="pool in poolGroups" :key="pool">
+            <div id="poolContent" v-for="pool in poolGroups" :key="pool.index">
               <ul>
                 <li>
                   <span id="poolHead">{{ pool.name }}</span>
@@ -58,15 +58,16 @@
                       class="subIcon"
                       alt="Sub Icon"
                       src="../assets/subs2.png"
-                  /></span>
+                    />remaining
+                  </span>
                 </li>
-                <li v-if="pool.isJoined" ||>
+                <li v-if="pool.isJoined">
                   <button class="leaveBtn" @click="leavePool">
                     <span>Joined</span>
                   </button>
                 </li>
                 <li v-else-if="pool.remaining != 0">
-                  <button class="joinBtn" @click="joinPool">
+                  <button class="joinBtn" @click="joinPool(pool.id)">
                     <span>Join Pool</span>
                   </button>
                 </li>
@@ -82,11 +83,13 @@
           <div id="bottomContainer" v-else>
             <br />
             <h1>List of Pool Groups</h1>
-            <ul id="noPools">
-              <li>
-                <span id="noPools">Empty Pool</span>
-              </li>
-            </ul>
+            <p v-show="loading">
+              <i
+                ><br />
+                <br />
+                <div class="loader"></div>
+              </i>
+            </p>
           </div>
         </div>
       </div>
@@ -98,6 +101,7 @@ import ActivityFeed from "./ActivityFeed.vue";
 import navbar from "./NavBar";
 import database from "../firebase";
 import { mapGetters } from "vuex";
+import firebase from "firebase";
 
 export default {
   components: { ActivityFeed, navbar },
@@ -109,17 +113,43 @@ export default {
       sid: null,
       poolGroups: [],
       services: [],
+      loading: true,
     };
   },
   methods: {
     createPool: function () {
+      localStorage.sid = this.sid;
       this.$router.push({
         name: "CreatePoolGroup",
         params: { sname: this.servName, sid: this.sid },
       });
     },
-    joinPool: function () {
-      alert("Joined " + this.servName);
+    joinPool: function (pid) {
+      const pools_ref = database.firestore().collection("pools");
+      const services_ref = database.firestore().collection("services");
+      console.log(pid);
+      pools_ref
+        .doc(pid)
+        .get()
+        .then((poolSnap) => {
+          poolSnap.forEach(async (pool) => {
+            if (pool.exists) {
+              services_ref
+                .doc(pool.data().serviceId)
+                .update({
+                  score: firebase.firestore.FieldValue.increment(1),
+                })
+                .then(() => {
+                  console.log("Document successfully updated!");
+                  alert("Joined " + this.pool.id);
+                })
+                .catch((error) => {
+                  // The document probably doesn't exist.
+                  console.error("Error updating document: ", error);
+                });
+            }
+          });
+        });
     },
     notifyMe: function () {
       alert("You will be notified when there is an open subscription.");
@@ -149,6 +179,8 @@ export default {
               .where("serviceId", "==", this.sid)
               .get()
               .then((querySnapShot) => {
+                const size = querySnapShot.size;
+                let count = 0;
                 querySnapShot.forEach((doc) => {
                   var isJoin = false;
                   poolGroup_ref
@@ -168,6 +200,10 @@ export default {
                     isJoined: isJoin,
                   });
                   //console.log(this.pools);
+                  count = count + 1;
+                  if (count == size) {
+                    this.stopLoad();
+                  }
                 });
               })
               .catch((error) => {
@@ -193,11 +229,15 @@ export default {
         this.arrow = "left-arrow-angle.png";
       }
     },
+    stopLoad: function () {
+      this.loading = false;
+    },
   },
   created() {
-    if (this.$route.params.sname == null) this.servName = "The Economist";
+    if (this.$route.params.sname == null) this.servName = localStorage.sname;
     this.fetchData();
   },
+
   computed: {
     ...mapGetters({
       // map `this.user` to `this.$store.getters.user`
@@ -222,7 +262,8 @@ export default {
   position: absolute;
   height: 50px;
   width: 50px;
-  bottom: 2px;
+  bottom: 5px;
+  left: 109px;
 }
 #mainContainer {
   display: grid;
@@ -236,6 +277,7 @@ export default {
 #bottomContainer {
   margin-top: 200px;
   height: 100%;
+  width: 900px;
   background-color: #69bbe9;
   border-top-right-radius: 10px;
 }
@@ -357,13 +399,13 @@ button:hover span:after {
   display: flex;
   background-color: white;
   border-radius: 10px;
-  width: 85%;
+  width: 90%;
   margin: 30px 0 0 40px;
 }
 
 #poolContent ul li {
   float: left;
-  width: 240px;
+  width: 300px;
   position: relative;
   display: block;
   padding: 5px;
@@ -391,5 +433,34 @@ ul li #noPool {
   font-size: 1.1em;
   text-transform: uppercase;
   padding: 10px;
+}
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  margin: 50px auto 0px auto;
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

@@ -6,35 +6,38 @@
       <button v-on:click="goBack">
         <span>Go Back</span>
       </button>
-      <div id="serviceContent" v-for="serv in service" :key="serv">
+      <div id="serviceContent" v-for="serv in service" :key="serv.index">
         <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
         <br />
         <span id="servHead">{{ serv.name }}</span> <br />
-        <span id="servType">{{ serv.category }}</span> <br />
       </div>
-      <h1>Create Pool Group</h1>
+      <h1>New Pool Group</h1>
       <div id="errorMsg" v-if="errors.length">
         Please correct the following error(s):
         <ul>
           <li v-for="error in errors" v-bind:key="error">{{ error }}</li>
         </ul>
       </div>
+      <v-select :options="options"></v-select>
       <input
         class="inputFields"
         v-model="maxSize"
-        type="number"
-        placeholder="Set Maximum number of people in group"
+        maxlength="1"
+        type="text"
+        placeholder="Set number of people in group"
       />
       <br />
       <input
         class="inputFields"
         v-model="poolName"
+        maxlength="30"
         placeholder="Name of the group"
       />
       <br />
       <input
         class="inputFields"
         v-model="sharedUserName"
+        maxlength="30"
         placeholder="Shared Username"
       />
       <br />
@@ -75,6 +78,8 @@ export default {
       sharedUserName: "",
       pool: {},
       userpool: {},
+      isValid: false,
+      options: [1, 2, 3, 4, 5, 6],
     };
   },
   methods: {
@@ -85,7 +90,8 @@ export default {
       });
     },
     createGroup: async function () {
-      if (this.checkForm()) {
+      this.checkForm();
+      if (this.isValid) {
         this.pool["serviceId"] = this.sid;
         this.pool["dateCreated"] = this.dateCreated;
         this.pool["maxSize"] = Number(this.maxSize);
@@ -116,12 +122,7 @@ export default {
           .firestore()
           .collection("poolgroups")
           .add(this.userpool)
-          .then(
-            alert(
-              "You've successfully created a group!\n" +
-                ".\n Wait for others to join the pool!"
-            )
-          )
+          .then(alert("You've successfully created a group!"))
           .catch((error) => {
             console.log("Error getting documents: ", error);
           });
@@ -137,21 +138,38 @@ export default {
       this.errors = [];
       if (
         !this.maxSize ||
-        !this.poolName ||
         !this.sharedPassword ||
-        !this.sharedUserName
+        !this.sharedPassword ||
+        !this.poolName
       ) {
-        this.errors.push("Please fill in all details.");
-        return false;
+        this.errors.push("Please fill in all details");
+        return;
       }
-      if (
-        this.maxSize &&
-        this.poolName &&
-        this.sharedPassword &&
-        this.sharedUserName
-      ) {
-        return true;
+      if (!this.checkAllNumbers(this.maxSize)) {
+        this.errors.push("Please enter a valid max size.");
+        return;
       }
+      if (!this.checkSize(this.maxSize)) {
+        this.errors.push("Please enter a max size between 1 to 6)");
+      }
+      if (this.errors.length == 0) {
+        this.isValid = true;
+      } else {
+        this.isValid = false;
+      }
+    },
+    checkSize: function (num) {
+      if (num > 0 && num < 7) return true;
+      return false;
+    },
+    checkAllNumbers: function (string) {
+      const numArray = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+      for (var i = 0; i < string.length; i++) {
+        if (numArray.indexOf(string[i]) <= -1) {
+          return false;
+        }
+      }
+      return true;
     },
     generateRandomPw: function () {
       this.sharedPassword = Math.random().toString(16).substr(2, 8);
@@ -207,6 +225,9 @@ export default {
   },
 
   created() {
+    if (this.$route.params.sname == null) this.servName = localStorage.sname;
+    if (this.$route.params.sid == null) this.servName = localStorage.sname;
+
     this.fetchService();
     this.fetchItems();
   },

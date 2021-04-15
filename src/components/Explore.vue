@@ -14,13 +14,19 @@
 
     <div class="content" v-if="showTopSubs">
       <div class="sectionHeader">
-        <h1 class="sectionh1">Trending Pools</h1>
+        <h1 class="sectionh1">Trending Services</h1>
       </div>
-
+      <p v-show="loading">
+        <i
+          ><br />
+          <br />
+          <div class="loader"></div>
+        </i>
+      </p>
       <div
         id="topSubList"
         v-for="serv in sortByScore(services).slice(0, 5)"
-        :key="serv"
+        :key="serv.index"
       >
         <ul>
           <li @click="goToPool($event)">
@@ -76,15 +82,19 @@ export default {
     return {
       services: [],
       pools: [],
+      loading: true,
       showTopSubs: true,
       showTopSearch: true,
     };
   },
   created() {
     this.fetchData();
-    this.tabulateTrends();
+    //this.tabulateTrends();
   },
   methods: {
+    stopLoad: function () {
+      this.loading = false;
+    },
     goToPool: function (event) {
       if (this.user.loggedIn) {
         //this.$router.push("pool-groups");
@@ -100,7 +110,7 @@ export default {
     },
     fetchData: function () {
       this.fetchServices();
-      this.fetchPools();
+      //this.fetchPools();
     },
     fetchPools: async function () {
       const poolRef = await database.firestore().collection("pools");
@@ -122,6 +132,8 @@ export default {
         .orderBy("score", "desc");
 
       serviceRef.get().then((querySnapShot) => {
+        const size = querySnapShot.size;
+        let count = 0;
         querySnapShot.forEach(async (doc) => {
           this.services.push({
             id: doc.id,
@@ -130,6 +142,10 @@ export default {
             logo: doc.data().logo,
             category: doc.data().category,
           });
+          count = count + 1;
+          if (count == size) {
+            this.stopLoad();
+          }
         });
       });
     },
@@ -214,7 +230,8 @@ export default {
   filter: drop-shadow(5px 5px 5px #222);
 }
 #topSubList {
-  margin: 50px 10px 10px 10px;
+  width: 100%;
+  margin: 50px auto 10px auto;
   border: 4px solid #69bbe9;
 }
 #topSubListalt {
@@ -348,5 +365,36 @@ ul li span:hover .tooltiptext {
   margin: 0px;
   padding: 180px 80px 80px 50px;
   background-color: #203647;
+}
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  margin: 200px auto 0px auto;
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+p i {
+  font: size 1.5em;
+}
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

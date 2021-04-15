@@ -21,20 +21,15 @@ export default {
         .auth()
         .signInWithPopup(provider)
         .then((result) => {
-          console.log(result.user);
-
           database
             .firestore()
             .collection("users")
             .doc(result.user.uid)
             .get()
             .then(async (doc) => {
-              console.log("Exists: " + doc.exists);
               if (doc.exists) {
-                console.log("user exists");
                 this.$router.push({ name: "Home" });
               } else {
-                console.log("user do not exist");
                 this.createAccount(
                   result.user.displayName,
                   result.user.email,
@@ -68,9 +63,6 @@ export default {
           phone: "",
           profilePhoto: photoUrl,
           pw: "",
-        })
-        .then(() => {
-          location.reload();
         })
         .catch((error) => {
           console.error("Error writing document: ", error);

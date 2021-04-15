@@ -3,13 +3,11 @@ import Router from 'vue-router';
 import store from './store.js'
 import Home from '@/components/Home';
 import Login from '@/components/Login';
-import SignUp from '@/components/SignUp';
 import ActivityFeed from '@/components/ActivityFeed';
 import AboutUs from '@/components/AboutUs';
 import Explore from '@/components/Explore';
 import PendingPools from '@/components/PendingPools';
 import SetPassword from '@/components/SetPassword';
-import SearchPoolPage from '@/components/SearchPoolPage';
 import PoolGroupsPage from '@/components/PoolGroupsPage';
 import UserProfle from '@/components/UserProfile';
 import Statistics from '@/components/Statistics';
@@ -17,7 +15,6 @@ import CreateSubscription from '@/components/CreateSubscription';
 import Logout from '@/components/Logout';
 import PaymentSetup from '@/components/PaymentSetup';
 import CreatePoolGroup from '@/components/CreatePoolGroup';
-
 
 Vue.use(Router);
 
@@ -32,11 +29,6 @@ const router = new Router({
             path: '/login',
             name: 'Login',
             component: Login
-        },
-        {
-            path: '/sign-up',
-            name: 'SignUp',
-            component: SignUp
         },
         {
             path: '/home',
@@ -84,14 +76,7 @@ const router = new Router({
             name: 'SetPassword',
             component: SetPassword,
         },
-        {
-            path: '/search-service',
-            name: 'SearchService',
-            component: SearchPoolPage,
-            meta: {
-                requiresAuth: true
-            }
-        },
+
         {
             path: '/pool-groups',
             name: 'PoolGroups',
@@ -103,14 +88,17 @@ const router = new Router({
         },
         {
             path: '/user-profile',
-            name: UserProfle,
+            name: 'UserProfle',
             component: UserProfle,
             props: true,
         },
         {
             path: '/statistics',
-            name: Statistics,
+            name: 'Statistics',
             component: Statistics,
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/create-subscription',
@@ -126,7 +114,7 @@ const router = new Router({
             component: Logout,
         }, {
             path: '/payment-setup',
-            name: PaymentSetup,
+            name: 'PaymentSetup',
             component: PaymentSetup,
         }, {
             path: '/create-pool',

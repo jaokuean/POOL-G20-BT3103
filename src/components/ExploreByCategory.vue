@@ -107,7 +107,7 @@ export default {
       if (this.user.loggedIn) {
         //this.$router.push("pool-groups");
         this.selectedName = event.target.innerHTML;
-
+        localStorage.sname = this.selectedName;
         this.$router.push({
           name: "PoolGroups",
           params: { sname: this.selectedName },

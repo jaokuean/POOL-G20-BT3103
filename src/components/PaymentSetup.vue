@@ -44,9 +44,7 @@
         class="ccFields"
       />
       <br /><br />
-      <br />
-      <router-link to="explore">Skip this step</router-link>
-      <br />
+
       <br />
       <button type="submit" @click="addCC()" class="submitBtn">
         <span>Submit</span>
@@ -58,36 +56,68 @@
 <script>
 import { mapGetters } from "vuex";
 //import firebase from "firebase";
+import database from "../firebase";
 
 export default {
   data() {
     return {
       errors: [],
+      ccName: "",
+      ccNum: "",
+      cvc: "",
       isValid: false,
-      ccName: null,
-      ccNum: null,
-      cvc: null,
+      uid: this.$store.getters.user.data.uid,
     };
   },
   methods: {
     addCC: function () {
-      if (this.checkForm()) {
-        console.log("CCADDED ");
-        this.$router.push("explore");
+      this.checkForm();
+      if (this.isValid) {
+        const creditcard_ref = database.firestore().collection("creditcards");
+        creditcard_ref
+          .add({
+            cardNumber: this.ccNum,
+            cardName: this.ccName,
+            cvc: this.cvc,
+            userID: this.uid,
+          })
+          .then(() => {
+            alert("Credit card details has been updated");
+            this.$router.push("explore");
+          });
       } else {
-        console.log("invalid password");
         return;
       }
     },
     checkForm: function () {
       this.errors = [];
       if (!this.ccName || !this.ccNum || !this.cvc) {
-        this.errors.push("Please fill in all details.");
-        return false;
+        this.errors.push("Please fill in all required details");
+        this.isValid = false;
+        return;
       }
-      if (this.ccName && this.ccNum && this.cvc) {
-        return true;
+      if (this.ccNum.length != 16 || !this.checkAllNumbers(this.ccNum)) {
+        this.errors.push(
+          "Please input a valid credit card number (16 characters)"
+        );
       }
+      if (this.cvc.length != 3 || !this.checkAllNumbers(this.cvc)) {
+        this.errors.push("Please input a valid cvc number (3 characters)");
+      }
+      if (this.errors.length == 0) {
+        this.isValid = true;
+      } else {
+        this.isValid = false;
+      }
+    },
+    checkAllNumbers: function (string) {
+      const numArray = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+      for (var i = 0; i < string.length; i++) {
+        if (numArray.indexOf(string[i]) <= -1) {
+          return false;
+        }
+      }
+      return true;
     },
   },
   computed: {
@@ -100,7 +130,6 @@ export default {
 </script>
 
 <style scoped>
-/* "scoped" attribute limit the CSS to this component only */
 #container {
   text-align: center;
 }
@@ -175,7 +204,7 @@ button span {
   display: inline-block;
   position: relative;
   transition: 0.5s;
-  color: #69bbe9;
+  color: black;
   font-weight: bold;
 }
 

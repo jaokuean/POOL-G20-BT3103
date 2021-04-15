@@ -96,11 +96,9 @@ export default {
     },
     submitPw: function () {
       if (this.isValid) {
-        console.log("USERDATA: " + this.user.data.uid);
         this.$router.push("payment-setup");
       } else {
         this.checkPassword();
-        console.log("invalid password");
         return;
       }
     },
@@ -133,7 +131,6 @@ export default {
     },
     strengthLevel() {
       let pass = this.scorePassword;
-      console.log(this.scorePassword);
       if (pass === 0) return 0;
       if (pass < 25) return 1;
       if (pass < 50) return 2;
@@ -155,7 +152,6 @@ export default {
 </script>
 
 <style scoped>
-/* "scoped" attribute limit the CSS to this component only */
 #container {
   text-align: center;
 }
@@ -311,7 +307,7 @@ button span {
   display: inline-block;
   position: relative;
   transition: 0.5s;
-  color: #69bbe9;
+  color: black;
   font-weight: bold;
 }
 
