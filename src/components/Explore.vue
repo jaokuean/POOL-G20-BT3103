@@ -29,9 +29,9 @@
         :key="serv.index"
       >
         <ul>
-          <li @click="goToPool($event)">
+          <li>
             <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
-            <span>
+            <span @click="goToPool($event)">
               <p class="serviceNames">{{ serv.name }}</p>
               <p class="servicePoolsCount">{{ serv.score }} Open Pools</p>
               <span class="tooltiptext">Join Pool</span>

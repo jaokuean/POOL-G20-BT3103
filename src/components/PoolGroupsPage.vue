@@ -62,18 +62,18 @@
                   </span>
                 </li>
                 <li v-if="pool.isJoined">
-                  <button class="leaveBtn" @click="leavePool">
+                  <button class="leaveBtn" @click="leavePool(pool)">
                     <span>Joined</span>
                   </button>
                 </li>
                 <li v-else-if="pool.remaining != 0">
-                  <button class="joinBtn" @click="joinPool(pool.id)">
+                  <button class="joinBtn" @click="joinPool(pool)">
                     <span>Join Pool</span>
                   </button>
                 </li>
 
                 <li v-else>
-                  <button class="notifyBtn" @click="notifyMe">
+                  <button class="notifyBtn" @click="notifyMe(pool)">
                     <span>Notify Me</span>
                   </button>
                 </li>
@@ -108,6 +108,7 @@ export default {
 
   data() {
     return {
+      uid: this.$store.getters.user.data.uid,
       activityOpen: true,
       servName: this.$route.params.sname,
       sid: null,
@@ -124,42 +125,162 @@ export default {
         params: { sname: this.servName, sid: this.sid },
       });
     },
-    joinPool: function (pid) {
+    joinPool: function (pool) {
       const pools_ref = database.firestore().collection("pools");
       const services_ref = database.firestore().collection("services");
-      console.log(pid);
+      const poolGroup_ref = database.firestore().collection("poolgroups");
+
+      let userpool = {};
+      userpool["poolID"] = pool.id;
+      userpool["startDate"] = database.firestore.FieldValue.serverTimestamp();
+      var currentDate = new Date();
+      userpool["endDate"] = database.firestore.FieldValue.serverTimestamp();
+      userpool["nextPaymentDue"] = new Date(
+        currentDate.setMonth(currentDate.getMonth() + 1)
+      );
+      userpool["userID"] = this.uid;
+      poolGroup_ref
+        .add(userpool)
+        .then(alert("You've successfully joined a " + pool.name + "!"))
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+
       pools_ref
-        .doc(pid)
+        .doc(pool.id)
         .get()
-        .then((poolSnap) => {
-          poolSnap.forEach(async (pool) => {
-            if (pool.exists) {
-              services_ref
-                .doc(pool.data().serviceId)
-                .update({
-                  score: firebase.firestore.FieldValue.increment(1),
-                })
-                .then(() => {
-                  console.log("Document successfully updated!");
-                  alert("Joined " + this.pool.id);
-                })
-                .catch((error) => {
-                  // The document probably doesn't exist.
-                  console.error("Error updating document: ", error);
-                });
+        .then((poolObj) => {
+          if (poolObj.exists) {
+            services_ref
+              .doc(poolObj.data().serviceId)
+              .update({
+                score: firebase.firestore.FieldValue.increment(1),
+              })
+              .then(() => {
+                console.log("Score Added updated!");
+              })
+              .catch((error) => {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+              });
+          }
+        });
+      pools_ref
+        .doc(pool.id)
+        .update({
+          remaining: firebase.firestore.FieldValue.increment(-1),
+        })
+        .then(() => {
+          console.log("Remaing Added updated!");
+        })
+        .catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+
+      this.$router.push({
+        name: "Home",
+      });
+    },
+    notifyMe: function (pool) {
+      alert(
+        "You will be notified when there is an open subscription for \n" +
+          pool.name +
+          "."
+      );
+    },
+    leavePool: function (pool) {
+      let check = confirm("Are you sure you want to leave this group?");
+      if (check) {
+        database
+          .firestore()
+          .collection("pools")
+          .doc(pool.id)
+          .get()
+          .then((doc) => {
+            if (doc.data().maxSize == doc.data().remaining + 1) {
+              console.log("delete");
+              this.deletePoolGroup(pool);
+            } else {
+              console.log("leave");
+
+              this.leavePoolGroup(doc);
             }
+          });
+      }
+    },
+    deletePoolGroup: function (pool) {
+      const poolgrps_ref = database.firestore().collection("poolgroups");
+      const pools_ref = database.firestore().collection("pools");
+      const services_ref = database.firestore().collection("services");
+      services_ref.doc(pool.sid).update({
+        score: database.firestore.FieldValue.increment(-1),
+      });
+      console.log("delete DAT: " + pool.id);
+      poolgrps_ref
+        .where("poolID", "==", pool.id)
+        .get()
+        .then(function (querySnapshot) {
+          querySnapshot.forEach(function (doc) {
+            doc.ref.delete().then(() => {
+              pools_ref
+                .doc(pool.id)
+                .delete()
+                .then(() => {
+                  alert("Left group");
+                  window.location.reload();
+                });
+            });
           });
         });
     },
-    notifyMe: function () {
-      alert("You will be notified when there is an open subscription.");
-    },
-    fetchData: function () {
+    leavePoolGroup: function (poolData) {
+      const poolgrps_ref = database.firestore().collection("poolgroups");
+      const pools_ref = database.firestore().collection("pools");
+      const activity_ref = database.firestore().collection("activities");
       const services_ref = database.firestore().collection("services");
-      var poolRef = database.firestore().collection("pools");
-      const poolGroup_ref = database.firestore().collection("poolgroups");
 
-      services_ref
+      //Create feed object for member leaving
+      let feed = {};
+      feed["content"] =
+        this.$store.getters.user.data.displayName + " left the pool";
+      feed["title"] = "***Pool Notice***";
+      feed["user"] = "";
+      feed["pool"] = poolData.id;
+      feed["dateCreated"] = database.firestore.Timestamp.fromDate(new Date());
+
+      services_ref.doc(poolData.data().serviceId).update({
+        score: database.firestore.FieldValue.increment(-1),
+      });
+      console.log(poolData.id);
+      poolgrps_ref
+        .where("poolID", "==", poolData.id)
+        .get()
+        .then(function (querySnapshot) {
+          querySnapshot.forEach(function (doc) {
+            console.log("test");
+            doc.ref.delete().then(() => {
+              pools_ref
+                .doc(poolData.id)
+                .update({
+                  remaining: poolData.data().remaining + 1,
+                })
+                .then(() => {
+                  activity_ref.add(feed).then(() => {
+                    alert("Left group");
+                    window.location.reload();
+                  });
+                });
+            });
+          });
+        });
+    },
+    fetchData: async function () {
+      const services_ref = await database.firestore().collection("services");
+      var poolRef = await database.firestore().collection("pools");
+      var poolGroup_ref = database.firestore().collection("poolgroups");
+
+      await services_ref
         .where("serviceName", "==", this.servName)
         .get()
         .then((querySnapshot) => {
@@ -172,42 +293,45 @@ export default {
               logo: service.data().logo,
               category: service.data().category,
             });
-            //console.log("FIND THIS: " + this.sid);
-            //console.log(doc.id, " => ", doc.data());
-            //.where("remaining", ">", 0)
-            poolRef
-              .where("serviceId", "==", this.sid)
+          });
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+      await poolRef
+        .where("serviceId", "==", this.sid)
+        .get()
+        .then((querySnapShot) => {
+          const size = querySnapShot.size;
+          let count = 0;
+          querySnapShot.forEach((doc) => {
+            let poolObj = {};
+            poolObj["id"] = doc.id;
+            poolObj["remaining"] = doc.data().remaining;
+            poolObj["sid"] = this.sid;
+            poolObj["name"] = doc.data().poolName;
+            var isJoined = false;
+
+            poolGroup_ref = poolGroup_ref.where(
+              "userID",
+              "==",
+              this.user.data.uid
+            );
+            poolGroup_ref
+              .where("poolID", "==", doc.id)
               .get()
-              .then((querySnapShot) => {
-                const size = querySnapShot.size;
-                let count = 0;
-                querySnapShot.forEach((doc) => {
-                  var isJoin = false;
-                  poolGroup_ref
-                    .where("userID", "==", this.user.data.uid)
-                    .get()
-                    .then((poolGroupSnapshot) => {
-                      poolGroupSnapshot.forEach((poolGroup) => {
-                        if (poolGroup.poolID === doc.id) isJoin = true;
-                      });
-                    });
-                  console.log("check boolean : " + isJoin);
-                  this.poolGroups.push({
-                    id: doc.id,
-                    remaining: doc.data().remaining,
-                    sid: service.data().serviceId,
-                    name: doc.data().poolName,
-                    isJoined: isJoin,
-                  });
-                  //console.log(this.pools);
-                  count = count + 1;
-                  if (count == size) {
-                    this.stopLoad();
-                  }
+              .then((poolGroupSnapshot) => {
+                poolGroupSnapshot.forEach((poolGroup) => {
+                  if (poolGroup.exists) isJoined = true;
                 });
               })
-              .catch((error) => {
-                console.log("Error getting documents: ", error);
+              .then(() => {
+                poolObj["isJoined"] = isJoined;
+                this.poolGroups.push(poolObj);
+                count = count + 1;
+                if (count == size) {
+                  this.stopLoad();
+                }
               });
           });
         })
@@ -215,6 +339,7 @@ export default {
           console.log("Error getting documents: ", error);
         });
     },
+    checkJoin: function () {},
     toggle: function () {
       console.log(this.servName);
       if (this.activityOpen) {
@@ -236,6 +361,7 @@ export default {
   created() {
     if (this.$route.params.sname == null) this.servName = localStorage.sname;
     this.fetchData();
+    this.checkJoin();
   },
 
   computed: {
@@ -335,12 +461,7 @@ export default {
   margin-left: 20px;
   filter: drop-shadow(5px 5px 5px #222);
 }
-.joinBtn {
-  background-color: #203647;
-}
-.notifyBtn {
-  background-color: red;
-}
+
 .startPoolBtn {
   background-color: #203647;
   position: absolute;
@@ -394,7 +515,31 @@ button:hover span:after {
   opacity: 1;
   right: 5;
 }
-
+.joinBtn {
+  background-color: #203647;
+}
+.notifyBtn {
+  background-color: orange;
+}
+.leaveBtn {
+  background-color: #3498db;
+}
+.leaveBtn:hover {
+  background-color: red;
+}
+.leaveBtn:hover span {
+  overflow: hidden;
+  display: none;
+  color: red;
+}
+.leaveBtn:hover:after {
+  position: absolute;
+  bottom: 17px;
+  right: 88px;
+  content: "Leave Pool\00bb";
+  padding-right: 15px;
+  font-weight: bold;
+}
 #poolContent ul {
   display: flex;
   background-color: white;

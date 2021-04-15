@@ -58,6 +58,8 @@
 <script>
 import database from "../firebase.js";
 import navbar from "./NavBar.vue";
+import firebase from "firebase";
+
 export default {
   components: {
     navbar,
@@ -92,6 +94,9 @@ export default {
     createGroup: async function () {
       this.checkForm();
       if (this.isValid) {
+        const pools_ref = database.firestore().collection("pools");
+        const services_ref = database.firestore().collection("services");
+
         this.pool["serviceId"] = this.sid;
         this.pool["dateCreated"] = this.dateCreated;
         this.pool["maxSize"] = Number(this.maxSize);
@@ -125,6 +130,26 @@ export default {
           .then(alert("You've successfully created a group!"))
           .catch((error) => {
             console.log("Error getting documents: ", error);
+          });
+
+        pools_ref
+          .doc(docRef.id)
+          .get()
+          .then((poolObj) => {
+            if (poolObj.exists) {
+              services_ref
+                .doc(poolObj.data().serviceId)
+                .update({
+                  score: firebase.firestore.FieldValue.increment(1),
+                })
+                .then(() => {
+                  console.log("Score Added updated!");
+                })
+                .catch((error) => {
+                  // The document probably doesn't exist.
+                  console.error("Error updating document: ", error);
+                });
+            }
           });
         this.$router.push({
           name: "PoolGroups",
