@@ -60,6 +60,10 @@ export default {
             })
         },
         render: function() {
+            let i = 0;
+            for (i = 0; i < 6; i++) {
+                this.datacollection.datasets[0].data[i] = this.datacollection.datasets[0].data[i].toFixed(2);
+            }
             this.renderChart(this.datacollection, this.options);
         }
     },

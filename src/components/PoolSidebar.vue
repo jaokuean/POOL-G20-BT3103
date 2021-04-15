@@ -53,7 +53,9 @@ export default {
                 let count = 0;
                 querySnapShot.forEach((doc) => {
                     users_ref.doc(doc.data().userID).get().then((doc) => {
-                        this.members.push(doc.data());
+                        if (doc.exists) {
+                            this.members.push(doc.data());
+                        }
                         
                         // For loading callback
                         count = count + 1;
@@ -156,7 +158,7 @@ li > p {
 }
 
 ::-webkit-scrollbar {
-  width:0;
-  background: transparent;
+    width:0;
+    background: transparent;
 }
 </style>
