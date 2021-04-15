@@ -38,6 +38,9 @@ export default {
             pools_ref.get().then(querySnapShot => {
                 const size = querySnapShot.size;
                 let count = 0;
+                if (size == 0) {
+                    this.render();
+                }
                 querySnapShot.docs.forEach(doc => {
                     const pool = doc.data();
                     services_ref.doc(pool.serviceId).get().then(doc=>{

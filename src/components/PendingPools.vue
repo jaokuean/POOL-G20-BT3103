@@ -119,7 +119,6 @@ export default {
 <style scoped>
 #mainComponent {
     width: 90%;
-    font-family: Monaco, sans-serif;
 }
 
 #pendingPoolsContainer {
@@ -136,7 +135,6 @@ export default {
 
 .poolItem {
     cursor: pointer;
-    padding: 0.5em;
     border-radius: 0.3em;
 }
 .poolItem:hover {
