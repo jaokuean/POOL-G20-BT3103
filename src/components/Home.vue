@@ -19,7 +19,7 @@
         </div>
         <div id='rightCol'>
           <account-sidebar v-show='!clickedPool'/>
-          <pool-sidebar v-bind:pool="pool" v-if="clickedPool"/>
+          <pool-sidebar v-bind:pool="pool" v-if="clickedPool" @toProfile='onDbClicked'/>
         </div>
       </div>
     </div>
