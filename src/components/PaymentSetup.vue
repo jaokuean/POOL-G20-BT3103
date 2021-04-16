@@ -9,7 +9,6 @@
       <h3>SET PAYMENT METHOD</h3>
 
       <div id="errorMsg" v-if="errors.length">
-        Please correct the following error(s):
         <ul>
           <li v-for="error in errors" v-bind:key="error">{{ error }}</li>
         </ul>
@@ -82,7 +81,7 @@ export default {
             userID: this.uid,
           })
           .then(() => {
-            alert("Credit card details has been updated");
+            alert("Your account has been successfully created.");
             this.$router.push("explore");
           });
       } else {
@@ -130,6 +129,11 @@ export default {
 </script>
 
 <style scoped>
+ul li {
+  display: block;
+  text-decoration: none;
+  margin-left: -35px;
+}
 #container {
   text-align: center;
 }

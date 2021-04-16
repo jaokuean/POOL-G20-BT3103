@@ -42,6 +42,7 @@
                 v-model="phoneNumber"
                 type="tel"
                 tabindex="3"
+                maxlength="8"
                 required
               />
             </fieldset>
@@ -52,7 +53,7 @@
                 id="updateBtn"
                 @click="updateUser"
               >
-                Update User
+                <span>Update User</span>
               </button>
             </fieldset>
           </form>
@@ -96,7 +97,7 @@
                 id="updateBtn"
                 @click="updateCard"
               >
-                Update Card Details
+                <span>Update Card Details</span>
               </button>
             </fieldset>
           </form>
@@ -329,26 +330,47 @@ fieldset {
   border: 1px solid #aaa;
 }
 
-#contact button[type="button"] {
-  cursor: pointer;
-  width: 100%;
+button {
+  border-radius: 3px;
+  background-color: #69bbe9;
   border: none;
-  background: #4caf50;
-  color: #fff;
-  margin: 0 0 5px;
-  padding: 10px;
-  font-size: 15px;
+  color: black;
+  text-align: center;
+  padding: 20px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px 5px px 0px;
+  text-transform: uppercase;
+  height: 45px;
+  width: 100%;
+  line-height: 2px;
 }
 
-#contact button[type="submit"]:hover {
-  background: #43a047;
-  -webkit-transition: background 0.3s ease-in-out;
-  -moz-transition: background 0.3s ease-in-out;
-  transition: background-color 0.3s ease-in-out;
+button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: azure;
+  font-weight: bold;
 }
 
-#contact button[type="submit"]:active {
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button:hover span {
+  padding-right: 15px;
+}
+
+button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 
 .copyright {

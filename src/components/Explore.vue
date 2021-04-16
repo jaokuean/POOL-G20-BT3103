@@ -33,7 +33,14 @@
             <img alt="photoURL" v-bind:src="serv.logo" id="logoImg" />
             <span @click="goToPool($event)">
               <p class="serviceNames">{{ serv.name }}</p>
-              <p class="servicePoolsCount">{{ serv.score }} Open Pools</p>
+              <p class="servicePoolsCount">
+                {{ serv.score }}
+                <img
+                  class="subIcon"
+                  alt="people Icon"
+                  src="../assets/people.png"
+                />
+              </p>
               <span class="tooltiptext">Join Pool</span>
             </span>
           </li>
@@ -229,6 +236,12 @@ export default {
   margin-left: 20px;
   filter: drop-shadow(5px 5px 5px #222);
 }
+.subIcon {
+  position: absolute;
+  height: 28px;
+  width: 28px;
+  left: 45px;
+}
 #topSubList {
   width: 100%;
   margin: 50px auto 10px auto;
@@ -250,7 +263,7 @@ export default {
 }
 .servicePoolsCount {
   margin: 0;
-  font-size: 0.8em;
+  font-size: 1.15em;
 }
 .sectionh1 {
   text-align: left;
@@ -276,7 +289,7 @@ ul li {
   position: relative;
   display: block;
   width: 152px;
-  margin-right: 10px;
+  margin-right: 25px;
 }
 
 ul li span {
