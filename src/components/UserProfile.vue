@@ -211,6 +211,10 @@ export default {
       }
     },
     updateUser: function () {
+      if (!this.checkAllNumbers(this.phoneNumber)) {
+        alert("Please make sure that phone number contains only numbers");
+        return;
+      }
       const user_ref = database.firestore().collection("users").doc(this.uid);
       user_ref
         .update({
