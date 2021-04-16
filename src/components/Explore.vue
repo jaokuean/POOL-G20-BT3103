@@ -240,7 +240,7 @@ export default {
   position: absolute;
   height: 28px;
   width: 28px;
-  left: 45px;
+  left: 5px;
 }
 #topSubList {
   width: 100%;
