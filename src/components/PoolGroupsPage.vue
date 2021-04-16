@@ -23,9 +23,6 @@
                 @click="toggle"
               />
             </span>
-            <p id='backBtnWrapper'>
-              <button id='backBtn' @click="back"><span>Back to explore</span></button>
-            </p>
           </div>
           <div>
             <div id="serviceContent" v-for="serv in services" :key="serv.index">
@@ -223,15 +220,16 @@ export default {
       }
     },
     deletePoolGroup: function (pool) {
-      const poolgrps_ref = database.firestore().collection("poolgroups");
+      var poolgrps_ref = database.firestore().collection("poolgroups");
       const pools_ref = database.firestore().collection("pools");
       const services_ref = database.firestore().collection("services");
       services_ref.doc(pool.sid).update({
         score: database.firestore.FieldValue.increment(-1),
       });
       console.log("delete DAT: " + pool.id);
+      poolgrps_ref = poolgrps_ref.where("poolID", "==", pool.id);
       poolgrps_ref
-        .where("poolID", "==", pool.id)
+        .where("userID", "==", this.uid)
         .get()
         .then(function (querySnapshot) {
           querySnapshot.forEach(function (doc) {
@@ -248,7 +246,7 @@ export default {
         });
     },
     leavePoolGroup: function (poolData) {
-      const poolgrps_ref = database.firestore().collection("poolgroups");
+      var poolgrps_ref = database.firestore().collection("poolgroups");
       const pools_ref = database.firestore().collection("pools");
       const activity_ref = database.firestore().collection("activities");
       const services_ref = database.firestore().collection("services");
@@ -266,8 +264,9 @@ export default {
         score: database.firestore.FieldValue.increment(-1),
       });
       console.log(poolData.id);
+      poolgrps_ref = poolgrps_ref.where("poolID", "==", poolData.id);
       poolgrps_ref
-        .where("poolID", "==", poolData.id)
+        .where("userID", "==", this.uid)
         .get()
         .then(function (querySnapshot) {
           querySnapshot.forEach(function (doc) {
@@ -370,9 +369,9 @@ export default {
     stopLoad: function () {
       this.loading = false;
     },
-    back: function() {
-      this.$router.push('/explore');
-    }
+    back: function () {
+      this.$router.push("/explore");
+    },
   },
   created() {
     if (this.$route.params.sname == null) this.servName = localStorage.sname;
