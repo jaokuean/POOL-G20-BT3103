@@ -237,10 +237,9 @@ export default {
   filter: drop-shadow(5px 5px 5px #222);
 }
 .subIcon {
-  position: absolute;
   height: 28px;
   width: 28px;
-  left: 5px;
+  vertical-align: middle;
 }
 #topSubList {
   width: 100%;
@@ -263,7 +262,8 @@ export default {
 }
 .servicePoolsCount {
   margin: 0;
-  font-size: 1.15em;
+  font-size: 1.2em;
+  line-height: 40px;
 }
 .sectionh1 {
   text-align: left;
