@@ -7,6 +7,9 @@
                 <p> Monthly Cost</p>
                 <p id = "costbox" >${{pool.fee}}</p>
             </div>
+            <p id="buttonBox">
+                <button @click="toProfile"><span>To pool</span></button>
+            </p>
             <div id = "members-container">
                 <p><strong> Members </strong></p>
                 <p id='loadingText' v-show="loading"><i>Loading please wait...</i></p>
@@ -68,6 +71,9 @@ export default {
         },
         stopLoad: function() {
             this.loading = false;
+        },
+        toProfile: function() {
+            this.$emit('toProfile', this.pool);
         }
     }
 }
@@ -160,5 +166,53 @@ li > p {
 ::-webkit-scrollbar {
     width:0;
     background: transparent;
+}
+
+#buttonBox {
+    text-align: center;
+}
+
+button {
+  border-radius: 3px;
+  background-color: #69bbe9;
+  border: none;
+  color: black;
+  text-align: center;
+  padding: 20px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: auto;
+  text-transform: uppercase;
+  height: 45px;
+  width: 80%;
+  line-height: 2px;
+  box-shadow: 0 2px 4px 0 rgba(117, 117, 117, 0.2), 0 3px 10px 0 rgba(117, 117, 117, 0.19);
+}
+
+button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  color: azure;
+  font-weight: bold;
+}
+
+button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button:hover span {
+  padding-right: 15px;
+}
+
+button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 </style>

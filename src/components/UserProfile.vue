@@ -1,6 +1,6 @@
 <template>
   <div>
-    <navbar></navbar>
+    <navbar :key="navKey"></navbar>
     <div class="mainContainer">
       <h1>Edit Profile</h1>
 
@@ -129,6 +129,7 @@ export default {
       creditExist: false,
       creditId: "",
       uid: this.$store.getters.user.data.uid,
+      navKey:0,
     };
   },
   methods: {
@@ -211,6 +212,10 @@ export default {
       }
     },
     updateUser: function () {
+      if (!this.checkAllNumbers(this.phoneNumber)) {
+        alert("Please make sure that phone number contains only numbers");
+        return;
+      }
       const user_ref = database.firestore().collection("users").doc(this.uid);
       user_ref
         .update({
@@ -222,6 +227,7 @@ export default {
           alert("User updated!");
           this.userName = this.userNameUpdated;
           this.profilePhoto = this.profilePhotoUpdated;
+          this.navKey += 1;
         });
     },
     checkAllNumbers: function (string) {

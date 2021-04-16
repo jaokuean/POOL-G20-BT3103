@@ -17,12 +17,12 @@
             ><img
               id="avatarImg"
               alt="photoURL"
-              v-bind:src="user.data.photoUrl"
+              v-bind:src="userData.profilePhoto"
               class="logo"
           /></router-link>
           <span id="welcomeUser">
             Welcome,<br />
-            {{ user.data.displayName }}
+            {{ userData.name }}
           </span>
 
           <button @click.prevent="signOut"><span>Logout</span></button>
@@ -53,7 +53,9 @@ import { mapGetters } from "vuex";
 import firebase from "firebase";
 export default {
   data() {
-    return {};
+    return {
+      userData:{},
+    };
   },
   components: {},
   computed: {
@@ -77,7 +79,19 @@ export default {
     goLogin() {
       this.$router.push("login");
     },
+    getUser() {
+      if (this.user.loggedIn) {
+        firebase.firestore().collection('users').doc(this.user.data.uid).get().then(doc=>{
+          if (doc.exists) {
+            this.userData = doc.data();
+          }
+        })
+      }
+    }
   },
+  created() {
+    this.getUser();
+  }
 };
 </script>
 

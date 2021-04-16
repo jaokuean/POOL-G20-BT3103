@@ -68,6 +68,7 @@ export default {
             inputMsg:"",
             blindpw:'',
             pwBtnTxt: 'Show password',
+            userName:'',
         }
     },
     props:['pool'],
@@ -94,6 +95,11 @@ export default {
                         let member = doc.data();
                         member['userID'] = uid;
                         this.members.push(member);
+
+                        // Get name of this user
+                        if (doc.id == this.$store.getters.user.data.uid) {
+                            this.userName = member.name;
+                        }
                     })
                 })
             }).then(() => {
@@ -149,18 +155,13 @@ export default {
             // Create feed object for message and write to database
             let feed = {};
             feed['content'] = msg;
-            feed['title'] = 'Message from '+ this.$store.getters.user.data.displayName;
+            feed['title'] = 'Message from '+ this.userName;
             feed['user'] = this.$store.getters.user.data.uid;
             feed['pool'] = this.pool.poolID;
             feed['dateCreated'] = database.firestore.Timestamp.fromDate(new Date());
             database.firestore().collection('activities').add(feed).then((docref) => {
                 console.log("write successful " + docref);
             });
-
-            // Add to current feeds so there is no lag on display
-            // feed['date'] = feed.dateCreated.toDate();
-            // this.feeds.push(feed);
-            // this.feeds=this.feeds.sort((a,b)=>b.date - a.date);
 
             // Close modal
             var modal = document.getElementById("myModalForm");

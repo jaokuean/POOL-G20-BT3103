@@ -13,6 +13,7 @@
         </div>
         <div id ='myPoolsContainer'>
             <h2>My Pools</h2>
+            <p id="disclaimerTxt"><i>*Click pool once to open sidebar, twice to open detailed profile</i></p>
             <p class="msg" v-show="loading"><i>Loading please wait...</i></p>
             <p class="msg" v-show="myPools.length==0 && !loading"><i>You have no pools, get started by adding a subscription!</i></p>
             <ul>
@@ -152,6 +153,13 @@ export default {
 h2 {
     margin-left: 4rem;
     padding-top: 1rem;
+    display: inline-block;
+}
+
+#disclaimerTxt {
+    margin-left: 1rem;
+    font-size: 0.6vw;
+    display: inline-block;
 }
 
 ul {

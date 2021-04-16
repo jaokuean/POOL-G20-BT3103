@@ -23,6 +23,9 @@
                 @click="toggle"
               />
             </span>
+            <p id='backBtnWrapper'>
+              <button id='backBtn' @click="back"><span>Back to explore</span></button>
+            </p>
           </div>
           <div>
             <div id="serviceContent" v-for="serv in services" :key="serv.index">
@@ -367,6 +370,9 @@ export default {
     stopLoad: function () {
       this.loading = false;
     },
+    back: function() {
+      this.$router.push('/explore');
+    }
   },
   created() {
     if (this.$route.params.sname == null) this.servName = localStorage.sname;
@@ -409,6 +415,46 @@ export default {
 #topContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+#toggleAF {
+  display: inline-block;
+}
+#backBtn {
+  border-radius: 3px;
+  background-color: #69bbe9;
+  border: none;
+  color: black;
+  text-align: center;
+  transition: all 0.5s;
+  cursor: pointer;
+  text-transform: uppercase;
+  height: 45px;
+  width: 35%;
+  line-height: 2px;
+  margin-left: 10em;
+}
+#backBtn span {
+  cursor: pointer;
+  display: inline-block;
+
+  transition: 0.5s;
+  color: azure;
+  font-weight: bold;
+}
+#backBtn span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+#backBtn:hover span {
+  padding-right: 15px;
+}
+#backBtn:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 #bottomContainer {
   margin-top: 200px;
