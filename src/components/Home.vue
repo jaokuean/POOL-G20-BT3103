@@ -106,6 +106,7 @@ export default {
 #topContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  margin-bottom: 1em;
 }
 
 #mainContainer {
