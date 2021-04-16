@@ -104,6 +104,7 @@ button span {
   position: relative;
   transition: 0.5s;
   color: black;
+  font-weight: bold;
 }
 
 button span:after {
