@@ -129,6 +129,14 @@ export default {
       const pools_ref = database.firestore().collection("pools");
       const services_ref = database.firestore().collection("services");
       const poolGroup_ref = database.firestore().collection("poolgroups");
+      const activities_ref = database.firestore().collection("activities");
+
+      let joinFeed = {};
+      joinFeed['content'] = this.$store.getters.user.data.displayName + " joined the pool";
+      joinFeed['dateCreated'] = database.firestore.FieldValue.serverTimestamp();
+      joinFeed["pool"] = pool.id;
+      joinFeed['title'] = "***Pool Notice***";
+      joinFeed['user'] = "";
 
       let userpool = {};
       userpool["poolID"] = pool.id;
@@ -172,15 +180,17 @@ export default {
         })
         .then(() => {
           console.log("Remaing Added updated!");
+          activities_ref.add(joinFeed).then(() => {
+            this.$router.push({
+              name: "Home",
+            });
+          })
         })
         .catch((error) => {
           // The document probably doesn't exist.
           console.error("Error updating document: ", error);
         });
 
-      this.$router.push({
-        name: "Home",
-      });
     },
     notifyMe: function (pool) {
       alert(
