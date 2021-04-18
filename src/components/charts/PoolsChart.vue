@@ -1,6 +1,6 @@
 <template>
     <div style="text-align:center">
-        <h2>Breakdown of total pool subscriptions</h2>
+        <h2>Global pool subscriptions by category</h2>
         <pools-chart></pools-chart>
     </div>
 </template>
