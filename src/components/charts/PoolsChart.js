@@ -17,7 +17,7 @@ export default {
                 legend: { display: false },
                 title: {
                     display: true,
-                    text: 'Total Pool subscriptions for different categories'
+                    text: 'Breakdown of subsciptions'
                 },
                 responsive: true,
                 maintainAspectRatio: false,
